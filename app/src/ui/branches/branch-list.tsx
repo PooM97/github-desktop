@@ -131,6 +131,9 @@ interface IBranchListProps {
 
   /** Optional: Callback for if delete context menu should exist */
   readonly onDeleteBranch?: (branchName: string) => void
+
+  /** Optional: Callback for if view ticket on Jira context menu should exist */
+  readonly onViewTicketOnJira?: (branchName: string) => void
 }
 
 interface IBranchListState {
@@ -276,9 +279,13 @@ export class BranchList extends React.Component<
   ) => {
     event.preventDefault()
 
-    const { onRenameBranch, onDeleteBranch } = this.props
+    const { onRenameBranch, onDeleteBranch, onViewTicketOnJira } = this.props
 
-    if (onRenameBranch === undefined && onDeleteBranch === undefined) {
+    if (
+      onRenameBranch === undefined &&
+      onDeleteBranch === undefined &&
+      onViewTicketOnJira === undefined
+    ) {
       return
     }
 
@@ -290,6 +297,7 @@ export class BranchList extends React.Component<
       isLocal,
       onRenameBranch,
       onDeleteBranch,
+      onViewTicketOnJira,
     })
 
     showContextualMenu(items)

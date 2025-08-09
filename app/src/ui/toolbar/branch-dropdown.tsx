@@ -27,6 +27,7 @@ import { generateBranchContextMenuItems } from '../branches/branch-list-item-con
 import { showContextualMenu } from '../../lib/menu-item'
 import { Emoji } from '../../lib/emoji'
 import { enableResizingToolbarButtons } from '../../lib/feature-flag'
+import { getTicketID, getJiraTicketUrl } from '../../lib/jira'
 
 interface IBranchDropdownProps {
   readonly dispatcher: Dispatcher
@@ -110,6 +111,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
         emoji={this.props.emoji}
         onDeleteBranch={this.onDeleteBranch}
         onRenameBranch={this.onRenameBranch}
+        onViewTicketOnJira={this.onViewTicketOnJira}
         underlineLinks={this.props.underlineLinks}
       />
     )
@@ -309,6 +311,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       name: tip.branch.name,
       isLocal: tip.branch.type === BranchType.Local,
       onRenameBranch: this.onRenameBranch,
+      onViewTicketOnJira: this.onViewTicketOnJira,
       onViewPullRequestOnGitHub: this.props.currentPullRequest
         ? this.onViewPullRequestOnGithub
         : undefined,
@@ -336,6 +339,24 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       repository: this.props.repository,
       branch,
     })
+  }
+
+  private onViewTicketOnJira = (branchName: string) => {
+    const branch = this.getBranchWithName(branchName)
+    if (branch === undefined) {
+      return
+    }
+
+    const ticket = getTicketID(branchName)
+    if (ticket === null) {
+      return
+    }
+
+    const url = getJiraTicketUrl(ticket)
+    if (url === null) {
+      return
+    }
+    this.props.dispatcher.openInBrowser(url)
   }
 
   private onViewPullRequestOnGithub = () => {

@@ -23,6 +23,7 @@ import { Appearance } from './appearance'
 import { ApplicationTheme } from '../lib/application-theme'
 import { OkCancelButtonGroup } from '../dialog/ok-cancel-button-group'
 import { Integrations } from './integrations'
+import { SelfIntegrations } from './self-integrations'
 import {
   UncommittedChangesStrategy,
   defaultUncommittedChangesStrategy,
@@ -47,6 +48,7 @@ import {
   TargetPathArgument,
   isValidCustomIntegration,
 } from '../../lib/custom-integration'
+import { getJiraUrl, setJiraUrl } from '../../lib/jira'
 
 interface IPreferencesProps {
   readonly dispatcher: Dispatcher
@@ -113,6 +115,8 @@ interface IPreferencesState {
   readonly selectedExternalEditor: string | null
   readonly availableShells: ReadonlyArray<Shell>
   readonly selectedShell: Shell
+  readonly initialJiraUrl: string | null
+  readonly jiraUrl: string
 
   /**
    * If unable to save Git configuration values (name, email)
@@ -189,6 +193,8 @@ export class Preferences extends React.Component<
       isLoadingGitConfig: true,
       underlineLinks: this.props.underlineLinks,
       showDiffCheckMarks: this.props.showDiffCheckMarks,
+      initialJiraUrl: null,
+      jiraUrl: '',
     }
   }
 
@@ -226,6 +232,9 @@ export class Preferences extends React.Component<
     const availableEditors = editors.map(e => e.editor) ?? null
     const availableShells = shells.map(e => e.shell) ?? null
 
+    const initialJiraUrl = getJiraUrl()
+    const jiraUrl = initialJiraUrl || ''
+
     this.setState({
       committerName,
       committerEmail,
@@ -256,6 +265,8 @@ export class Preferences extends React.Component<
       useCustomShell: this.props.useCustomShell,
       customShell: this.props.customShell ?? DefaultCustomIntegration,
       isLoadingGitConfig: false,
+      initialJiraUrl: initialJiraUrl,
+      jiraUrl,
     })
   }
 
@@ -317,6 +328,10 @@ export class Preferences extends React.Component<
               <Octicon className="icon" symbol={octicons.accessibility} />
               Accessibility
             </span>
+            <span id={this.getTabId(PreferencesTab.SelfIntegrations)}>
+              <Octicon className="icon" symbol={octicons.plug} />
+              Self Integrations
+            </span>
           </TabBar>
 
           {this.renderActiveTab()}
@@ -352,6 +367,9 @@ export class Preferences extends React.Component<
         break
       case PreferencesTab.Accessibility:
         suffix = 'accessibility'
+        break
+      case PreferencesTab.SelfIntegrations:
+        suffix = 'Self Integrations'
         break
       default:
         return assertNever(tab, `Unknown tab type: ${tab}`)
@@ -537,6 +555,14 @@ export class Preferences extends React.Component<
           />
         )
         break
+      case PreferencesTab.SelfIntegrations:
+        View = (
+          <SelfIntegrations
+            jiraUrl={this.state.jiraUrl}
+            onJiraUrlChanged={this.onJiraUrlChanged}
+          />
+        )
+        break
       default:
         return assertNever(index, `Unknown tab index: ${index}`)
     }
@@ -683,6 +709,10 @@ export class Preferences extends React.Component<
     this.props.dispatcher.setSelectedTabSize(tabSize)
   }
 
+  private onJiraUrlChanged = (jiraUrl: string) => {
+    this.setState({ jiraUrl })
+  }
+
   private renderFooter() {
     const hasDisabledError = this.state.disallowedCharactersMessage != null
 
@@ -737,6 +767,9 @@ export class Preferences extends React.Component<
         dispatcher.setRepositoryIndicatorsEnabled(
           this.state.repositoryIndicatorsEnabled
         )
+      }
+      if (this.state.jiraUrl !== this.state.initialJiraUrl) {
+        setJiraUrl(this.state.jiraUrl)
       }
     } catch (e) {
       if (isConfigFileLockError(e)) {

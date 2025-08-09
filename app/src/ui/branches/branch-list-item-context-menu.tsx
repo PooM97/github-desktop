@@ -5,6 +5,7 @@ interface IBranchContextMenuConfig {
   name: string
   isLocal: boolean
   onRenameBranch?: (branchName: string) => void
+  onViewTicketOnJira?: (branchName: string) => void
   onViewPullRequestOnGitHub?: () => void
   onDeleteBranch?: (branchName: string) => void
 }
@@ -16,6 +17,7 @@ export function generateBranchContextMenuItems(
     name,
     isLocal,
     onRenameBranch,
+    onViewTicketOnJira,
     onViewPullRequestOnGitHub,
     onDeleteBranch,
   } = config
@@ -38,6 +40,13 @@ export function generateBranchContextMenuItems(
     items.push({
       label: 'View Pull Request on GitHub',
       action: () => onViewPullRequestOnGitHub(),
+    })
+  }
+
+  if (onViewTicketOnJira !== undefined) {
+    items.push({
+      label: 'View Ticket on Jira',
+      action: () => onViewTicketOnJira(name),
     })
   }
 
