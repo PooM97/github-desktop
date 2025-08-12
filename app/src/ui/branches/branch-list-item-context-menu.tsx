@@ -1,5 +1,6 @@
 import { IMenuItem } from '../../lib/menu-item'
 import { clipboard } from 'electron'
+import { getTicketID } from '../../lib/jira'
 
 interface IBranchContextMenuConfig {
   name: string
@@ -58,6 +59,7 @@ export function generateBranchContextMenuItems(
     items.push({
       label: 'View Ticket on Jira',
       action: () => onViewTicketOnJira(name),
+      enabled: Boolean(getTicketID(name)),
     })
   }
 
