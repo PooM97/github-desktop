@@ -26,6 +26,9 @@ export function generateBranchContextMenuItems(
   } = config
   const items = new Array<IMenuItem>()
 
+  const ticketId = getTicketID(name) ?? ''
+  const enableJiraIntegration = Boolean(ticketId)
+
   if (onRenameBranch !== undefined) {
     items.push({
       label: 'Rename…',
@@ -55,11 +58,17 @@ export function generateBranchContextMenuItems(
     })
   }
 
+  items.push({
+    label: 'Copy Ticket ID',
+    action: () => clipboard.writeText(ticketId),
+    enabled: enableJiraIntegration,
+  })
+
   if (onViewTicketOnJira !== undefined) {
     items.push({
       label: 'View Ticket on Jira',
       action: () => onViewTicketOnJira(name),
-      enabled: Boolean(getTicketID(name)),
+      enabled: enableJiraIntegration,
     })
   }
 
