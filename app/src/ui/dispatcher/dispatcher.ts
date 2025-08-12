@@ -126,6 +126,7 @@ import { ICustomIntegration } from '../../lib/custom-integration'
 import { isAbsolute } from 'path'
 import { CLIAction } from '../../lib/cli-action'
 import { BypassReasonType } from '../secret-scanning/bypass-push-protection-dialog'
+import { pylintOnDiff } from '../../lib/pylint/pylint-cmd'
 
 /**
  * An error handler function.
@@ -4051,5 +4052,57 @@ export class Dispatcher {
 
   public toggleChangesFilterVisibility() {
     this.appStore._toggleChangesFilterVisibility()
+  }
+
+  public async initialPylint(repository: Repository, selectedBranch: Branch) {
+    const { branchesState } = this.repositoryStateManager.get(repository)
+    const { defaultBranch, allBranches, recentBranches, tip } = branchesState
+
+    let currentBranch: Branch | null = null
+    if (tip.kind === TipState.Valid) {
+      currentBranch = tip.branch
+    } else {
+      throw new Error(
+        'Tip is not in a valid state, which is required to run Pylint'
+      )
+    }
+    await this.closeFoldout(FoldoutType.Branch)
+    if (selectedBranch.name === currentBranch.name) {
+      this.showPopup({
+        type: PopupType.RunPylint,
+        repository: repository,
+        defaultBranch: defaultBranch,
+        currentBranch: currentBranch,
+        allBranches: allBranches,
+        recentBranches: recentBranches,
+      })
+    } else {
+      await this.runPylint(repository, selectedBranch, currentBranch)
+    }
+  }
+
+  public async runPylint(
+    repository: Repository,
+    baseBranch: Branch,
+    comparisonBranch: Branch
+  ) {
+    try {
+      const response = await pylintOnDiff(
+        repository,
+        baseBranch,
+        comparisonBranch
+      )
+      if (response.stderr) {
+        this.showPopup({
+          type: PopupType.Error,
+          error: Error(response.stderr),
+        })
+      }
+    } catch (error) {
+      this.showPopup({
+        type: PopupType.Error,
+        error: error,
+      })
+    }
   }
 }

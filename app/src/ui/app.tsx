@@ -198,6 +198,7 @@ import {
   BypassReason,
   BypassReasonType,
 } from './secret-scanning/bypass-push-protection-dialog'
+import { PylintDialog } from './pylint'
 
 const MinuteInMilliseconds = 1000 * 60
 const HourInMilliseconds = MinuteInMilliseconds * 60
@@ -2569,6 +2570,19 @@ export class App extends React.Component<IAppProps, IAppState> {
             repository={popup.repository}
             filesSelected={popup.filesSelected}
             onDismissed={onPopupDismissedFn}
+          />
+        )
+      }
+      case PopupType.RunPylint: {
+        return (
+          <PylintDialog
+            key="pylint-dialog"
+            dispatcher={this.props.dispatcher}
+            repository={popup.repository}
+            defaultBranch={popup.defaultBranch}
+            currentBranch={popup.currentBranch}
+            allBranches={popup.allBranches}
+            recentBranches={popup.recentBranches}
           />
         )
       }

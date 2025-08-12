@@ -50,6 +50,7 @@ interface IBranchesContainerProps {
   readonly pullRequests: ReadonlyArray<PullRequest>
   readonly onRenameBranch: (branchName: string) => void
   readonly onViewTicketOnJira: (branchName: string) => void
+  readonly onRunPylint: (branchName: string) => void
   readonly onDeleteBranch: (branchName: string) => void
 
   /** The pull request associated with the current branch. */
@@ -290,6 +291,7 @@ export class BranchesContainer extends React.Component<
             renderPreList={this.renderPreList}
             onRenameBranch={this.props.onRenameBranch}
             onViewTicketOnJira={this.props.onViewTicketOnJira}
+            onRunPylint={this.props.onRunPylint}
             onDeleteBranch={this.props.onDeleteBranch}
           />
         )

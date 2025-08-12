@@ -112,6 +112,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
         onDeleteBranch={this.onDeleteBranch}
         onRenameBranch={this.onRenameBranch}
         onViewTicketOnJira={this.onViewTicketOnJira}
+        onRunPylint={this.onRunPylint}
         underlineLinks={this.props.underlineLinks}
       />
     )
@@ -312,6 +313,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       isLocal: tip.branch.type === BranchType.Local,
       onRenameBranch: this.onRenameBranch,
       onViewTicketOnJira: this.onViewTicketOnJira,
+      onRunPylint: this.onRunPylint,
       onViewPullRequestOnGitHub: this.props.currentPullRequest
         ? this.onViewPullRequestOnGithub
         : undefined,
@@ -357,6 +359,16 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       return
     }
     this.props.dispatcher.openInBrowser(url)
+  }
+
+  private onRunPylint = (branchName: string) => {
+    const { dispatcher, repository } = this.props
+    const selectedBranch = this.getBranchWithName(branchName)
+
+    if (selectedBranch === undefined) {
+      return
+    }
+    dispatcher.initialPylint(repository, selectedBranch)
   }
 
   private onViewPullRequestOnGithub = () => {

@@ -103,6 +103,7 @@ export enum PopupType {
   BypassPushProtection = 'BypassPushProtection',
   GenerateCommitMessageOverrideWarning = 'GenerateCommitMessageOverrideWarning',
   GenerateCommitMessageDisclaimer = 'GenerateCommitMessageDisclaimer',
+  RunPylint = 'RunPylint',
 }
 
 interface IBasePopup {
@@ -463,6 +464,14 @@ export type PopupDetail =
       // from this popup we will trigger the commit message generation too.
       repository: Repository
       filesSelected: ReadonlyArray<WorkingDirectoryFileChange>
+    }
+  | {
+      type: PopupType.RunPylint
+      repository: Repository
+      defaultBranch: Branch | null
+      currentBranch: Branch
+      allBranches: ReadonlyArray<Branch>
+      recentBranches: ReadonlyArray<Branch>
     }
 
 export type Popup = IBasePopup & PopupDetail

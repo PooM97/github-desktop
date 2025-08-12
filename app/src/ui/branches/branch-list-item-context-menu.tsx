@@ -8,6 +8,7 @@ interface IBranchContextMenuConfig {
   onViewTicketOnJira?: (branchName: string) => void
   onViewPullRequestOnGitHub?: () => void
   onDeleteBranch?: (branchName: string) => void
+  onRunPylint?: (branchName: string) => void
 }
 
 export function generateBranchContextMenuItems(
@@ -20,6 +21,7 @@ export function generateBranchContextMenuItems(
     onViewTicketOnJira,
     onViewPullRequestOnGitHub,
     onDeleteBranch,
+    onRunPylint,
   } = config
   const items = new Array<IMenuItem>()
 
@@ -40,6 +42,15 @@ export function generateBranchContextMenuItems(
     items.push({
       label: 'View Pull Request on GitHub',
       action: () => onViewPullRequestOnGitHub(),
+    })
+  }
+
+  items.push({ type: 'separator' })
+
+  if (onRunPylint !== undefined) {
+    items.push({
+      label: 'Run Pylint',
+      action: () => onRunPylint(name),
     })
   }
 
