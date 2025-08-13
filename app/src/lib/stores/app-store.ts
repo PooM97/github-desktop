@@ -3956,7 +3956,11 @@ export class AppStore extends TypedBaseStore<IAppState> {
   }
 
   /** This shouldn't be called directly. See `Dispatcher`. */
-  public async _deleteTag(repository: Repository, name: string, removeOrigin: boolean) {
+  public async _deleteTag(
+    repository: Repository,
+    name: string,
+    removeOrigin: boolean
+  ) {
     const gitStore = this.gitStoreCache.get(repository)
     await gitStore.deleteTag(name, removeOrigin)
   }

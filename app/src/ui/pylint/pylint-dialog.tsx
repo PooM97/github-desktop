@@ -9,10 +9,7 @@ import { getDefaultAriaLabelForBranch } from '../branches/branch-renderer'
 import { Dialog, DialogContent, DialogFooter } from '../dialog'
 import { PopupType } from '../../models/popup'
 import { Button } from '../lib/button'
-import {
-  getPyFilesChangedBetweenBranches,
-  pylintOnDiff,
-} from '../../lib/pylint/pylint-cmd'
+import { getPyFilesChangedBetweenBranches } from '../../lib/pylint/pylint-cmd'
 
 interface IPylintDialogProps {
   readonly dispatcher: Dispatcher

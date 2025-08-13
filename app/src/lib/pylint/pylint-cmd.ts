@@ -102,7 +102,9 @@ export async function pylintOnDiff(
       comparisonBranch
     )
     if (files.length === 0) {
-      throw new Error(`No files changed between ${baseBranch.name}...${comparisonBranch.name}.`)
+      throw new Error(
+        `No python files changed between ${baseBranch.name}...${comparisonBranch.name}.`
+      )
     }
 
     return await pylint(files, repository.path)
