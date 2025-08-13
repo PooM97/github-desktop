@@ -4087,6 +4087,13 @@ export class Dispatcher {
     }
   }
 
+  public showErrorPopup(error: Error): Promise<void> {
+    return this.appStore._showPopup({
+      type: PopupType.Error,
+      error: error,
+    })
+  }
+
   public async runPylint(
     repository: Repository,
     baseBranch: Branch,
@@ -4099,16 +4106,10 @@ export class Dispatcher {
         comparisonBranch
       )
       if (response.stderr) {
-        this.showPopup({
-          type: PopupType.Error,
-          error: Error(response.stderr),
-        })
+        this.showErrorPopup(Error(response.stderr))
       }
     } catch (error) {
-      this.showPopup({
-        type: PopupType.Error,
-        error: error,
-      })
+      this.showErrorPopup(error)
     }
   }
 }
