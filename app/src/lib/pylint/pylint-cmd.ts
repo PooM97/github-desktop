@@ -1,10 +1,11 @@
-import * as Path from 'path'
+import * as path from 'path'
 import { Repository } from '../../models/repository'
 import { getBranchMergeBaseChangedFiles } from '../git/diff'
 import { spawn } from 'child_process'
 import { Branch } from '../../models/branch'
 import { findFileInGit } from '../git/ls-file'
 import { getLatestCommitSha } from '../git/rev-parse'
+import { withPythonEnv } from '../terminal'
 
 /**
  * Get all changed Python files between two branches (based on their merge base).
@@ -43,7 +44,27 @@ export async function getPyFilesChangedBetweenBranches(
   return changes.files
     .map(f => f.path)
     .filter(p => p.toLowerCase().endsWith('.py'))
-    .map(p => Path.join(repository.path, p))
+    .map(p => path.join(repository.path, p))
+}
+
+/**
+ * Helper to run a command in a child process and capture output.
+ */
+function _pylintSpawn(
+  command: string,
+  args: string[],
+  options: { cwd: string; env: NodeJS.ProcessEnv }
+): Promise<{ code: number; stdout: string; stderr: string }> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, options)
+    let stdout = ''
+    let stderr = ''
+
+    child.stdout.on('data', d => (stdout += d.toString()))
+    child.stderr.on('data', d => (stderr += d.toString()))
+    child.on('error', reject)
+    child.on('close', code => resolve({ code: code ?? 1, stdout, stderr }))
+  })
 }
 
 /**
@@ -54,37 +75,26 @@ export async function getPyFilesChangedBetweenBranches(
  * @returns A promise resolving to the Pylint exit code and captured stdio.
  */
 export async function pylint(files: string[], cwd: string) {
-  return new Promise<{ code: number; stdout: string; stderr: string }>(
-    async (resolve, reject) => {
-      if (files.length === 0) {
-        return resolve({
-          code: 0,
-          stdout: 'No Python files changed.',
-          stderr: '',
-        })
-      }
-
-      const pylintrcFiles = await findFileInGit(cwd, '.pylintrc')
-      const pylintrcPath = pylintrcFiles.length > 0 ? pylintrcFiles[0] : null
-
-      const args = [
-        '--disable=import-error',
-        '--output=pylint_report.txt',
-        ...(pylintrcPath ? ['--rcfile', pylintrcPath] : []),
-      ]
-      log.info(`Pylint arguments: ${args.join(' ')}`)
-
-      const child = spawn('pylint', [...args, ...files], { cwd })
-      let out = '',
-        err = ''
-      child.stdout.on('data', d => (out += d.toString()))
-      child.stderr.on('data', d => (err += d.toString()))
-      child.on('error', reject)
-      child.on('close', code =>
-        resolve({ code: code ?? 1, stdout: out, stderr: err })
-      )
+  if (files.length === 0) {
+    return {
+      code: 0,
+      stdout: 'No Python files changed.',
+      stderr: '',
     }
-  )
+  }
+
+  const pylintrcFiles = await findFileInGit(cwd, '.pylintrc')
+  const pylintrcPath = pylintrcFiles.length > 0 ? pylintrcFiles[0] : null
+
+  const args = [
+    '--output=pylint_report.txt',
+    ...(pylintrcPath ? ['--rcfile', pylintrcPath] : []),
+    ...files,
+  ]
+  log.info(`Pylint arguments: ${args.join(' ')}`)
+
+  // Ensure we execute pylint within the virtual environment by invoking Python
+  return withPythonEnv(env => _pylintSpawn('pylint', args, { cwd, env }), cwd)
 }
 
 /**

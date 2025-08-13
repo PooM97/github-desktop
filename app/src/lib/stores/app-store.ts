@@ -3791,7 +3791,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
    *
    * This will be called automatically when appropriate.
    */
-  private async refreshChangesSection(
+  public async refreshChangesSection(
     repository: Repository,
     options: {
       includingStatus: boolean
