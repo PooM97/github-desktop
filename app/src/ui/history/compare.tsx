@@ -640,8 +640,12 @@ export class CompareSidebar extends React.Component<
     }
   }
 
-  private onDeleteTag = (tagName: string) => {
-    this.props.dispatcher.showDeleteTagDialog(this.props.repository, tagName)
+  private onDeleteTag = (tagName: string, removeOrigin: boolean) => {
+    this.props.dispatcher.showDeleteTagDialog(
+      this.props.repository,
+      tagName,
+      removeOrigin
+    )
   }
 
   private onCherryPick = (commits: ReadonlyArray<CommitOneLine>) => {

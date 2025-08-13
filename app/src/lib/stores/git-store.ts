@@ -75,6 +75,7 @@ import {
   createBranch,
   updateRemoteHEAD,
   getRemoteHEAD,
+  deleteOriginTag,
 } from '../git'
 import { GitError as DugiteError } from '../../lib/git'
 import { GitError } from 'dugite'
@@ -353,7 +354,7 @@ export class GitStore extends BaseStore {
     this.statsStore.increment('tagsCreatedInDesktop')
   }
 
-  public async deleteTag(name: string) {
+  public async deleteTag(name: string, removeOrigin: boolean) {
     const result = await this.performFailableOperation(async () => {
       await deleteTag(this.repository, name)
       return true
@@ -367,6 +368,16 @@ export class GitStore extends BaseStore {
     this.removeTagToPush(name)
 
     this.statsStore.increment('tagsDeleted')
+
+    // Delete the remote tag after refreshTags.
+    // This ensures the local tag is removed, and if remote deletion fails,
+    // the user can fetch to restore the original tag from the remote.
+    if (removeOrigin) {
+      await this.performFailableOperation(async () => {
+        await deleteOriginTag(this.repository, name)
+        return true
+      })
+    }
   }
 
   /** The list of ordered SHAs. */

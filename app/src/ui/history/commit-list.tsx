@@ -111,8 +111,8 @@ interface ICommitListProps {
   /** Callback to fire to open the dialog to create a new tag on the given commit */
   readonly onCreateTag?: (targetCommitSha: string) => void
 
-  /** Callback to fire to delete an unpushed tag */
-  readonly onDeleteTag?: (tagName: string) => void
+  /** Callback to fire to delete an unpushed or push tag */
+  readonly onDeleteTag?: (tagName: string, removeOrigin: boolean) => void
 
   /**
    * A handler called whenever the user drops commits on the list to be inserted.
@@ -900,11 +900,14 @@ export class CommitList extends React.Component<
 
     if (commit.tags.length === 1) {
       const tagName = commit.tags[0]
+      const removeOrigin = !unpushedTags.includes(tagName)
 
       return {
-        label: `Delete tag ${tagName}`,
-        action: () => onDeleteTag(tagName),
-        enabled: unpushedTags.includes(tagName),
+        label: removeOrigin
+          ? `Delete tag ${tagName} (Origin)`
+          : `Delete tag ${tagName}`,
+        action: () => onDeleteTag(tagName, removeOrigin),
+        // enabled: unpushedTags.has(tagName),  // force enable
       }
     }
 
@@ -914,10 +917,11 @@ export class CommitList extends React.Component<
     return {
       label: 'Delete tag…',
       submenu: commit.tags.map(tagName => {
+        const removeOrigin = !unpushedTagsSet.has(tagName)
         return {
-          label: tagName,
-          action: () => onDeleteTag(tagName),
-          enabled: unpushedTagsSet.has(tagName),
+          label: removeOrigin ? `${tagName} (Origin)` : tagName,
+          action: () => onDeleteTag(tagName, removeOrigin),
+          // enabled: unpushedTagsSet.has(tagName), // force enable
         }
       }),
     }
