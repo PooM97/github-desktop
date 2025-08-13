@@ -6,7 +6,8 @@ const JIRAKEY = 'jira-url'
  * @returns The Jira base URL from localStorage, or null if not set.
  */
 export function getJiraUrl(): string | null {
-  return localStorage.getItem(JIRAKEY)
+  const url = localStorage.getItem(JIRAKEY)
+  return url && url.trim() !== '' ? url : null
 }
 
 /**

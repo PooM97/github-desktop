@@ -356,6 +356,11 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
 
     const url = getJiraTicketUrl(ticket)
     if (url === null) {
+      this.props.dispatcher.showErrorPopup(
+        Error(
+          'Jira URL is not set. Please set it in Self integration (Settings).'
+        )
+      )
       return
     }
     this.props.dispatcher.openInBrowser(url)
