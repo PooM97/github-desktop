@@ -4110,6 +4110,11 @@ export class Dispatcher {
       }
     } catch (error) {
       this.showErrorPopup(error)
+    } finally {
+      await this.appStore.refreshChangesSection(repository, {
+        includingStatus: true,
+        clearPartialState: false,
+      })
     }
   }
 }
