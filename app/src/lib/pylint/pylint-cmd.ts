@@ -63,10 +63,8 @@ export async function pylint(files: string[], cwd: string) {
           stderr: '',
         })
       }
-      const pylintrcFiles = await findFileInGit(
-        { path: cwd } as Repository,
-        '.pylintrc'
-      )
+
+      const pylintrcFiles = await findFileInGit(cwd, '.pylintrc')
       const pylintrcPath = pylintrcFiles.length > 0 ? pylintrcFiles[0] : null
 
       const args = [

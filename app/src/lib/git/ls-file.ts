@@ -1,5 +1,4 @@
 import * as Path from 'path'
-import { Repository } from '../../models/repository'
 import { git } from '../git/core'
 
 /**
@@ -10,16 +9,12 @@ import { git } from '../git/core'
  * @returns An array of absolute paths to matching files.
  */
 export async function findFileInGit(
-  repository: Repository,
+  path: string,
   fileName: string
 ): Promise<string[]> {
-  const result = await git(
-    ['ls-files', `*${fileName}*`],
-    repository.path,
-    'lsFiles'
-  )
+  const result = await git(['ls-files', `*${fileName}*`], path, 'lsFiles')
   return result.stdout
     .split('\n')
     .filter(line => line.length > 0)
-    .map(relativePath => Path.join(repository.path, relativePath))
+    .map(relativePath => Path.join(path, relativePath))
 }
