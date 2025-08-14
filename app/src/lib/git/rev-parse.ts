@@ -57,6 +57,11 @@ export async function getRepositoryType(path: string): Promise<RepositoryType> {
   }
 }
 
+export async function getLatestCommitSha(path: string, branchName: string) {
+  const result = await git(['rev-parse', branchName], path, 'revParse')
+  return result.exitCode === 0 ? result.stdout.trim() : null
+}
+
 export async function getUpstreamRefForRef(path: string, ref?: string) {
   const rev = (ref ?? '') + '@{upstream}'
   const args = ['rev-parse', '--symbolic-full-name', rev]

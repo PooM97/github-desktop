@@ -1,9 +1,10 @@
 import * as Path from 'path'
-import { git } from '../git/core'
 import { Repository } from '../../models/repository'
 import { getBranchMergeBaseChangedFiles } from '../git/diff'
 import { spawn } from 'child_process'
 import { Branch } from '../../models/branch'
+import { findFileInGit } from '../git/ls-file'
+import { getLatestCommitSha } from '../git/rev-parse'
 
 /**
  * Get all changed Python files between two branches (based on their merge base).
@@ -19,12 +20,14 @@ export async function getPyFilesChangedBetweenBranches(
   comparisonBranch: Branch
 ): Promise<string[]> {
   // latest commit of comparisonBranch
-  const latest = await git(
-    ['rev-parse', comparisonBranch.name],
+  const latestSha = await getLatestCommitSha(
     repository.path,
-    'revParse'
+    comparisonBranch.name
   )
-  const latestSha = latest.stdout.trim()
+
+  if (latestSha === null) {
+    return []
+  }
 
   const changes = await getBranchMergeBaseChangedFiles(
     repository,
@@ -52,7 +55,7 @@ export async function getPyFilesChangedBetweenBranches(
  */
 export async function pylint(files: string[], cwd: string) {
   return new Promise<{ code: number; stdout: string; stderr: string }>(
-    (resolve, reject) => {
+    async (resolve, reject) => {
       if (files.length === 0) {
         return resolve({
           code: 0,
@@ -60,13 +63,20 @@ export async function pylint(files: string[], cwd: string) {
           stderr: '',
         })
       }
-      const child = spawn(
-        'pylint',
-        ['--disable=import-error', '--output=pylint_report.txt', ...files],
-        {
-          cwd,
-        }
+      const pylintrcFiles = await findFileInGit(
+        { path: cwd } as Repository,
+        '.pylintrc'
       )
+      const pylintrcPath = pylintrcFiles.length > 0 ? pylintrcFiles[0] : null
+
+      const args = [
+        '--disable=import-error',
+        '--output=pylint_report.txt',
+        ...(pylintrcPath ? ['--rcfile', pylintrcPath] : []),
+      ]
+      log.info(`Pylint arguments: ${args.join(' ')}`)
+
+      const child = spawn('pylint', [...args, ...files], { cwd })
       let out = '',
         err = ''
       child.stdout.on('data', d => (out += d.toString()))
