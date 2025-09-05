@@ -91,7 +91,7 @@ export async function pylint(files: string[], cwd: string) {
 
   // Get pythonPath from local git config
   const pythonPath =
-    (await getConfigValueInPath('self.py.pythonPath', cwd, true)) || undefined
+    (await getConfigValueInPath('cc.py.pythonPath', cwd, true)) || undefined
   log.info(`PYTHONPATH from local config: ${pythonPath}`)
 
   const args = [

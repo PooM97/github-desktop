@@ -51,13 +51,6 @@ export function generateBranchContextMenuItems(
 
   items.push({ type: 'separator' })
 
-  if (onRunPylint !== undefined) {
-    items.push({
-      label: 'Run Pylint',
-      action: () => onRunPylint(name),
-    })
-  }
-
   items.push({
     label: 'Copy Ticket ID',
     action: () => clipboard.writeText(ticketId),
@@ -69,6 +62,13 @@ export function generateBranchContextMenuItems(
       label: 'View Ticket on Jira',
       action: () => onViewTicketOnJira(name),
       enabled: enableJiraIntegration,
+    })
+  }
+
+  if (onRunPylint !== undefined) {
+    items.push({
+      label: 'Run Pylint',
+      action: () => onRunPylint(name),
     })
   }
 
