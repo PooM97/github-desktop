@@ -1,15 +1,17 @@
 {
   "releases": {
-    "3.5.2 (v25)": {
+    "v25": {
+      "25.1": [
+        "[New] Custom config on repository settings",
+        "[Improved] Run pylint with PYTHONPATH from local git config",
+        "[Improved] Run pylint is hide when pylint is disabled in repository settings"
+      ],
       "25.0": [
         "[Improved] Add the ability to delete origin tag",
-        "[New] Add view Ticket on Jira and self integration in settings",
-        "[New] Add copy Jira Ticket ID to clipboard",
+        "[New] Self integration in app settings",
+        "[New] Add view Ticket on Jira on branch",
+        "[New] Add copy Jira Ticket ID to clipboard on branch",
         "[New] Add Run pylint on branch"
-      ],
-      "25.1": [
-        "[New] Self integration on repository",
-        "[Improved] Run pylint with PYTHONPATH from local git config"
       ]
     }
   }

@@ -28,6 +28,7 @@ import { showContextualMenu } from '../../lib/menu-item'
 import { Emoji } from '../../lib/emoji'
 import { enableResizingToolbarButtons } from '../../lib/feature-flag'
 import { getTicketID, getJiraTicketUrl } from '../../lib/jira'
+import { getBooleanConfigValue } from '../../lib/git'
 
 interface IBranchDropdownProps {
   readonly dispatcher: Dispatcher
@@ -84,11 +85,24 @@ interface IBranchDropdownProps {
   readonly underlineLinks: boolean
 }
 
+interface IBranchDropdownState {
+  readonly enablePylint: boolean
+}
+
 /**
  * A drop down for selecting the currently checked out branch.
  */
-export class BranchDropdown extends React.Component<IBranchDropdownProps> {
+export class BranchDropdown extends React.Component<
+  IBranchDropdownProps,
+  IBranchDropdownState
+> {
   private badgeRef: HTMLElement | null = null
+
+  public componentDidMount() {
+    getBooleanConfigValue(this.props.repository, 'cc.py.pylint', true)
+      .then(value => this.setState({ enablePylint: value === true }))
+      .catch(() => this.setState({ enablePylint: false }))
+  }
 
   private renderBranchFoldout = (): JSX.Element | null => {
     const repositoryState = this.props.repositoryState
@@ -307,17 +321,21 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
     if (tip.kind !== TipState.Valid) {
       return
     }
+    const a = getBooleanConfigValue(this.props.repository, 'cc.py.pylint', true)
+    a.then(value => this.setState({ enablePylint: value === true })).catch(() =>
+      this.setState({ enablePylint: false })
+    )
 
     const items = generateBranchContextMenuItems({
       name: tip.branch.name,
       isLocal: tip.branch.type === BranchType.Local,
       onRenameBranch: this.onRenameBranch,
       onViewTicketOnJira: this.onViewTicketOnJira,
-      onRunPylint: this.onRunPylint,
       onViewPullRequestOnGitHub: this.props.currentPullRequest
         ? this.onViewPullRequestOnGithub
         : undefined,
       onDeleteBranch: this.onDeleteBranch,
+      onRunPylint: this.state.enablePylint ? this.onRunPylint : undefined,
     })
 
     showContextualMenu(items)

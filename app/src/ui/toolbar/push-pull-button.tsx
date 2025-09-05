@@ -357,7 +357,6 @@ export class PushPullButton extends React.Component<
 
   private fetch = () => {
     this.closeDropdown()
-
     this.props.dispatcher.fetch(
       this.props.repository,
       FetchType.UserInitiatedTask

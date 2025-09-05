@@ -21,6 +21,7 @@ import { showContextualMenu } from '../../lib/menu-item'
 import { SectionFilterList } from '../lib/section-filter-list'
 import memoizeOne from 'memoize-one'
 import { getAuthors } from '../../lib/git/log'
+import { getBooleanConfigValue } from '../../lib/git/config'
 import { Repository } from '../../models/repository'
 import uuid from 'uuid'
 import { formatDate } from '../../lib/format-date'
@@ -142,6 +143,7 @@ interface IBranchListProps {
 
 interface IBranchListState {
   readonly commitAuthorDates: ReadonlyMap<string, Date>
+  readonly enablePylint: boolean
 }
 
 const commitDateCache = new Map<string, Date>()
@@ -195,6 +197,7 @@ export class BranchList extends React.Component<
     super(props)
     this.state = {
       commitAuthorDates: new Map<string, Date>(),
+      enablePylint: false,
     }
   }
 
@@ -245,6 +248,9 @@ export class BranchList extends React.Component<
 
   public componentDidMount() {
     this.populateCommitDates()
+    getBooleanConfigValue(this.props.repository, 'cc.py.pylint', true)
+      .then(value => this.setState({ enablePylint: value === true }))
+      .catch(() => this.setState({ enablePylint: false }))
   }
 
   public render() {
@@ -305,7 +311,7 @@ export class BranchList extends React.Component<
       onRenameBranch,
       onDeleteBranch,
       onViewTicketOnJira,
-      onRunPylint,
+      onRunPylint: this.state.enablePylint ? onRunPylint : undefined,
     })
 
     showContextualMenu(items)
