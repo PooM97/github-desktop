@@ -85,7 +85,7 @@ export async function getGlobalBooleanConfigValue(
  *                  expected type (i.e. 0 -> false, "on" -> true etc).
  *                  See `--type` documentation in `git config`
  */
-async function getConfigValueInPath(
+export async function getConfigValueInPath(
   name: string,
   path: string | null,
   onlyLocal: boolean = false,

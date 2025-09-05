@@ -4,6 +4,7 @@ import { getBranchMergeBaseChangedFiles } from '../git/diff'
 import { spawn } from 'child_process'
 import { Branch } from '../../models/branch'
 import { findFileInGit } from '../git/ls-file'
+import { getConfigValueInPath } from '../git/config'
 import { getLatestCommitSha } from '../git/rev-parse'
 import { withPythonEnv } from '../terminal'
 
@@ -83,9 +84,15 @@ export async function pylint(files: string[], cwd: string) {
     }
   }
 
+  // Locate a .pylintrc file in the repository
   const pylintrcFiles = await findFileInGit(cwd, '.pylintrc')
   const pylintrcPath = pylintrcFiles.length > 0 ? pylintrcFiles[0] : null
   log.info(`.pylintrc file: ${pylintrcPath}`)
+
+  // Get pythonPath from local git config
+  const pythonPath =
+    (await getConfigValueInPath('self.py.pythonPath', cwd, true)) || undefined
+  log.info(`PYTHONPATH from local config: ${pythonPath}`)
 
   const args = [
     '--output=pylint_report.txt',
@@ -95,7 +102,9 @@ export async function pylint(files: string[], cwd: string) {
   log.info(`Pylint arguments: ${args.join(' ')}`)
 
   // Ensure we execute pylint within the virtual environment by invoking Python
-  return withPythonEnv(env => _pylintSpawn('pylint', args, { cwd, env }), cwd)
+  return withPythonEnv(env => _pylintSpawn('pylint', args, { cwd, env }), cwd, {
+    PYTHONPATH: pythonPath,
+  })
 }
 
 /**
@@ -125,7 +134,6 @@ export async function pylintOnDiff(
         `No python files changed between ${baseBranch.name}...${comparisonBranch.name}.`
       )
     }
-
     return await pylint(files, repository.path)
   } catch (error) {
     log.error(

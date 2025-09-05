@@ -6,6 +6,10 @@
         "[New] Add view Ticket on Jira and self integration in settings",
         "[New] Add copy Jira Ticket ID to clipboard",
         "[New] Add Run pylint on branch"
+      ],
+      "25.1": [
+        "[New] Self integration on repository",
+        "[Improved] Run pylint with PYTHONPATH from local git config"
       ]
     }
   }

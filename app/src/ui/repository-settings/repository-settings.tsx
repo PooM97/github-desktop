@@ -16,6 +16,7 @@ import { NoRemote } from './no-remote'
 import { readGitIgnoreAtRoot } from '../../lib/git'
 import { OkCancelButtonGroup } from '../dialog/ok-cancel-button-group'
 import { ForkSettings } from './fork-settings'
+import { SelfIntegration } from './self-integration'
 import { ForkContributionTarget } from '../../models/workflow-preferences'
 import { GitConfigLocation, GitConfig } from './git-config'
 import {
@@ -45,6 +46,7 @@ export enum RepositorySettingsTab {
   Remote = 0,
   IgnoredFiles,
   GitConfig,
+  SelfIntegration,
   ForkSettings,
 }
 
@@ -66,6 +68,9 @@ interface IRepositorySettingsState {
   readonly errors?: ReadonlyArray<JSX.Element | string>
   readonly forkContributionTarget: ForkContributionTarget
   readonly isLoadingGitConfig: boolean
+  // Self Integration
+  readonly InitialPythonPath: string
+  readonly pythonPath: string
 }
 
 export class RepositorySettings extends React.Component<
@@ -93,6 +98,9 @@ export class RepositorySettings extends React.Component<
       initialCommitterName: null,
       initialCommitterEmail: null,
       isLoadingGitConfig: true,
+      // Self Integration
+      InitialPythonPath: '',
+      pythonPath: '',
     }
   }
 
@@ -118,6 +126,13 @@ export class RepositorySettings extends React.Component<
       'user.email',
       true
     )
+
+    const pythonPath =
+      (await getConfigValue(
+        this.props.repository,
+        'self.py.pythonPath',
+        true
+      )) || ''
 
     const globalCommitterName = (await getGlobalConfigValue('user.name')) || ''
     const globalCommitterEmail =
@@ -146,6 +161,8 @@ export class RepositorySettings extends React.Component<
       initialCommitterName: localCommitterName,
       initialCommitterEmail: localCommitterEmail,
       isLoadingGitConfig: false,
+      InitialPythonPath: pythonPath,
+      pythonPath: pythonPath,
     })
   }
 
@@ -194,6 +211,10 @@ export class RepositorySettings extends React.Component<
             <span>
               <Octicon className="icon" symbol={octicons.gitCommit} />
               {__DARWIN__ ? 'Git Config' : 'Git config'}
+            </span>
+            <span>
+              <Octicon className="icon" symbol={octicons.gitCommit} />
+              {__DARWIN__ ? 'Self Integration' : 'Self integration'}
             </span>
             {showForkSettings && (
               <span>
@@ -269,6 +290,14 @@ export class RepositorySettings extends React.Component<
             onNameChanged={this.onCommitterNameChanged}
             onEmailChanged={this.onCommitterEmailChanged}
             isLoadingGitConfig={this.state.isLoadingGitConfig}
+          />
+        )
+      }
+      case RepositorySettingsTab.SelfIntegration: {
+        return (
+          <SelfIntegration
+            pythonPath={this.state.pythonPath}
+            onPythonPathChanged={this.onPythonPathChanged}
           />
         )
       }
@@ -377,6 +406,14 @@ export class RepositorySettings extends React.Component<
       }
     }
 
+    if (this.state.pythonPath !== this.state.InitialPythonPath) {
+      await setConfigValue(
+        this.props.repository,
+        'self.py.pythonPath',
+        this.state.pythonPath
+      )
+    }
+
     if (shouldRefreshAuthor) {
       this.props.dispatcher.refreshAuthor(this.props.repository)
     }
@@ -434,5 +471,8 @@ export class RepositorySettings extends React.Component<
 
   private onCommitterEmailChanged = (committerEmail: string) => {
     this.setState({ committerEmail })
+  }
+  private onPythonPathChanged = (pythonPath: string) => {
+    this.setState({ pythonPath })
   }
 }
