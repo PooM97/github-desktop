@@ -16,10 +16,11 @@ import { NoRemote } from './no-remote'
 import { readGitIgnoreAtRoot } from '../../lib/git'
 import { OkCancelButtonGroup } from '../dialog/ok-cancel-button-group'
 import { ForkSettings } from './fork-settings'
-import { SelfIntegration } from './self-integration'
+import { CustomConfig } from './custom-config'
 import { ForkContributionTarget } from '../../models/workflow-preferences'
 import { GitConfigLocation, GitConfig } from './git-config'
 import {
+  getBooleanConfigValue,
   getConfigValue,
   getGlobalConfigValue,
   removeConfigValue,
@@ -46,7 +47,7 @@ export enum RepositorySettingsTab {
   Remote = 0,
   IgnoredFiles,
   GitConfig,
-  SelfIntegration,
+  CustomConfig,
   ForkSettings,
 }
 
@@ -68,9 +69,11 @@ interface IRepositorySettingsState {
   readonly errors?: ReadonlyArray<JSX.Element | string>
   readonly forkContributionTarget: ForkContributionTarget
   readonly isLoadingGitConfig: boolean
-  // Self Integration
+  // Custom Config
   readonly InitialPythonPath: string
   readonly pythonPath: string
+  readonly initialEnablePylint: boolean
+  readonly enablePylint: boolean
 }
 
 export class RepositorySettings extends React.Component<
@@ -98,9 +101,11 @@ export class RepositorySettings extends React.Component<
       initialCommitterName: null,
       initialCommitterEmail: null,
       isLoadingGitConfig: true,
-      // Self Integration
+      // Custom Config
       InitialPythonPath: '',
       pythonPath: '',
+      initialEnablePylint: false,
+      enablePylint: false,
     }
   }
 
@@ -128,11 +133,15 @@ export class RepositorySettings extends React.Component<
     )
 
     const pythonPath =
-      (await getConfigValue(
+      (await getConfigValue(this.props.repository, 'cc.py.pythonPath', true)) ||
+      ''
+
+    const enablePylint =
+      (await getBooleanConfigValue(
         this.props.repository,
-        'self.py.pythonPath',
+        'cc.py.pylint',
         true
-      )) || ''
+      )) || false
 
     const globalCommitterName = (await getGlobalConfigValue('user.name')) || ''
     const globalCommitterEmail =
@@ -163,6 +172,8 @@ export class RepositorySettings extends React.Component<
       isLoadingGitConfig: false,
       InitialPythonPath: pythonPath,
       pythonPath: pythonPath,
+      initialEnablePylint: enablePylint,
+      enablePylint: enablePylint,
     })
   }
 
@@ -214,7 +225,7 @@ export class RepositorySettings extends React.Component<
             </span>
             <span>
               <Octicon className="icon" symbol={octicons.gitCommit} />
-              {__DARWIN__ ? 'Self Integration' : 'Self integration'}
+              {__DARWIN__ ? 'Custom Config' : 'Custom config'}
             </span>
             {showForkSettings && (
               <span>
@@ -293,11 +304,13 @@ export class RepositorySettings extends React.Component<
           />
         )
       }
-      case RepositorySettingsTab.SelfIntegration: {
+      case RepositorySettingsTab.CustomConfig: {
         return (
-          <SelfIntegration
+          <CustomConfig
             pythonPath={this.state.pythonPath}
             onPythonPathChanged={this.onPythonPathChanged}
+            pylint={this.state.enablePylint}
+            onPylintChanged={this.onPylintChanged}
           />
         )
       }
@@ -409,8 +422,15 @@ export class RepositorySettings extends React.Component<
     if (this.state.pythonPath !== this.state.InitialPythonPath) {
       await setConfigValue(
         this.props.repository,
-        'self.py.pythonPath',
+        'cc.py.pythonPath',
         this.state.pythonPath
+      )
+    }
+    if (this.state.enablePylint !== this.state.initialEnablePylint) {
+      await setConfigValue(
+        this.props.repository,
+        'cc.py.pylint',
+        this.state.enablePylint.toString()
       )
     }
 
@@ -472,7 +492,12 @@ export class RepositorySettings extends React.Component<
   private onCommitterEmailChanged = (committerEmail: string) => {
     this.setState({ committerEmail })
   }
+
   private onPythonPathChanged = (pythonPath: string) => {
     this.setState({ pythonPath })
+  }
+
+  private onPylintChanged = (enablePylint: boolean) => {
+    this.setState({ enablePylint })
   }
 }
