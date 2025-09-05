@@ -32,6 +32,15 @@ export function getVersion(): string {
 }
 
 /**
+ * Get the version of the app.
+ *
+ * This is preferable to using `remote` directly because we cache the result.
+ */
+export function getFolkVersion(): string {
+  return __FOLK_VERSION__
+}
+
+/**
  * Get the name of the app.
  */
 export function getName(): string {
