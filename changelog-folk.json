@@ -4,7 +4,8 @@
       "25.1": [
         "[New] Custom config on repository settings",
         "[Improved] Run pylint with PYTHONPATH from local git config",
-        "[Improved] Run pylint is hide when pylint is disabled in repository settings"
+        "[Improved] Run pylint is hide when pylint is disabled in repository settings",
+        "[Improved] View on remote when repository is not github"
       ],
       "25.0": [
         "[Improved] Add the ability to delete origin tag",
