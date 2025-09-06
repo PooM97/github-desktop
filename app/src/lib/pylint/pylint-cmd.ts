@@ -94,6 +94,11 @@ export async function pylint(files: string[], cwd: string) {
     (await getConfigValueInPath('cc.py.pythonPath', cwd, true)) || undefined
   log.info(`PYTHONPATH from local config: ${pythonPath}`)
 
+  // Get Python virtual environments from local git config
+  const pyVenvPath =
+    (await getConfigValueInPath('cc.py.venv', cwd, true)) || undefined
+  log.info(`venv from local config: ${pyVenvPath}`)
+
   const args = [
     '--output=pylint_report.txt',
     ...(pylintrcPath ? ['--rcfile', pylintrcPath] : []),
@@ -102,8 +107,9 @@ export async function pylint(files: string[], cwd: string) {
   log.info(`Pylint arguments: ${args.join(' ')}`)
 
   // Ensure we execute pylint within the virtual environment by invoking Python
-  return withPythonEnv(env => _pylintSpawn('pylint', args, { cwd, env }), cwd, {
+  return withPythonEnv(env => _pylintSpawn('pylint', args, { cwd, env }), {
     PYTHONPATH: pythonPath,
+    VIRTUAL_ENV: pyVenvPath,
   })
 }
 

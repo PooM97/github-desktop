@@ -74,6 +74,8 @@ interface IRepositorySettingsState {
   readonly pythonPath: string
   readonly initialEnablePylint: boolean
   readonly enablePylint: boolean
+  readonly initialPyVenv: string
+  readonly pyVenv: string
 }
 
 export class RepositorySettings extends React.Component<
@@ -106,6 +108,8 @@ export class RepositorySettings extends React.Component<
       pythonPath: '',
       initialEnablePylint: false,
       enablePylint: false,
+      pyVenv: '',
+      initialPyVenv: '',
     }
   }
 
@@ -135,6 +139,9 @@ export class RepositorySettings extends React.Component<
     const pythonPath =
       (await getConfigValue(this.props.repository, 'cc.py.pythonPath', true)) ||
       ''
+
+    const pyVenv =
+      (await getConfigValue(this.props.repository, 'cc.py.venv', true)) || ''
 
     const enablePylint =
       (await getBooleanConfigValue(
@@ -174,6 +181,8 @@ export class RepositorySettings extends React.Component<
       pythonPath: pythonPath,
       initialEnablePylint: enablePylint,
       enablePylint: enablePylint,
+      initialPyVenv: pyVenv,
+      pyVenv: pyVenv,
     })
   }
 
@@ -311,6 +320,8 @@ export class RepositorySettings extends React.Component<
             onPythonPathChanged={this.onPythonPathChanged}
             pylint={this.state.enablePylint}
             onPylintChanged={this.onPylintChanged}
+            pyVenv={this.state.pyVenv}
+            onPyVenvChanged={this.onPyVenvChanged}
           />
         )
       }
@@ -426,6 +437,15 @@ export class RepositorySettings extends React.Component<
         this.state.pythonPath
       )
     }
+
+    if (this.state.pyVenv !== this.state.initialPyVenv) {
+      await setConfigValue(
+        this.props.repository,
+        'cc.py.venv',
+        this.state.pyVenv
+      )
+    }
+
     if (this.state.enablePylint !== this.state.initialEnablePylint) {
       await setConfigValue(
         this.props.repository,
@@ -495,6 +515,10 @@ export class RepositorySettings extends React.Component<
 
   private onPythonPathChanged = (pythonPath: string) => {
     this.setState({ pythonPath })
+  }
+
+  private onPyVenvChanged = (pyVenv: string) => {
+    this.setState({ pyVenv })
   }
 
   private onPylintChanged = (enablePylint: boolean) => {

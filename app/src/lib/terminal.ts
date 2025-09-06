@@ -43,34 +43,19 @@ export async function findFolder(
  */
 export async function withPythonEnv<T>(
   fn: (env: NodeJS.ProcessEnv) => Promise<T>,
-  path: string,
   customEnv?: Record<string, string | undefined>
 ): Promise<T> {
-  // Locate the venv folder (supports 'venv' or '.venv' directly under path)
-  let venvFolder: string | undefined
-  for (const name of ['venv', '.venv']) {
-    const p = Path.join(path, name)
-    if (await directoryExists(p)) {
-      venvFolder = p
-      break
-    }
-  }
-  log.info(`venvFolder: ${venvFolder}`)
-
   // Global environment
   const pythonEnv = {
     ...process.env,
     ...(customEnv ?? {}),
   }
-  if (venvFolder) {
-    // Determine activate paths
-    const binDir = __DARWIN__
-      ? Path.join(venvFolder, 'bin')
-      : Path.join(venvFolder, 'Scripts')
 
+  if (customEnv?.VIRTUAL_ENV !== undefined) {
     // Prepare the environment variables for Python venv
-    pythonEnv['PATH'] = `${binDir}${Path.delimiter}${process.env.PATH ?? ''}`
-    pythonEnv['VIRTUAL_ENV'] = venvFolder
+    pythonEnv['PATH'] = `${customEnv.VIRTUAL_ENV}${Path.delimiter}${
+      process.env.PATH ?? ''
+    }`
   }
 
   return await fn(pythonEnv)

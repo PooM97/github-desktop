@@ -6,8 +6,10 @@ import { Row } from '../lib/row'
 
 interface ICustomConfig {
   readonly pythonPath: string
+  readonly pyVenv: string
   readonly pylint: boolean
-  readonly onPythonPathChanged: (name: string) => void
+  readonly onPythonPathChanged: (path: string) => void
+  readonly onPyVenvChanged: (path: string) => void
   readonly onPylintChanged: (isEnable: boolean) => void
 }
 
@@ -26,6 +28,16 @@ export class CustomConfig extends React.Component<ICustomConfig> {
             label="PYTHONPATH"
             value={this.props.pythonPath}
             onValueChanged={this.props.onPythonPathChanged}
+          />
+        </Row>
+        <Row>
+          <TextBox
+            placeholder={
+              __DARWIN__ ? 'usr/src/venv/bin' : 'usr/src/venv/Scripts'
+            }
+            label="Virtual Env"
+            value={this.props.pyVenv}
+            onValueChanged={this.props.onPyVenvChanged}
           />
         </Row>
         <Row>
