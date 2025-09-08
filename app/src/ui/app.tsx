@@ -2909,6 +2909,12 @@ export class App extends React.Component<IAppProps, IAppState> {
     }
   }
 
+  private viewOnRemote = (remoteUrl: string) => {
+    if (remoteUrl) {
+      this.props.dispatcher.openInBrowser(remoteUrl)
+    }
+  }
+
   private openInShell = (repository: Repository | CloningRepository) => {
     if (!(repository instanceof Repository)) {
       return
@@ -3049,6 +3055,12 @@ export class App extends React.Component<IAppProps, IAppState> {
       this.props.dispatcher.changeRepositoryAlias(repository, null)
     }
 
+    const selection = this.state.selectedState
+    if (!selection || selection.type !== SelectionType.Repository) {
+      return
+    }
+    const state = selection.state
+
     const items = generateRepositoryListContextMenu({
       onRemoveRepository: this.removeRepository,
       onShowRepository: this.showRepository,
@@ -3060,6 +3072,9 @@ export class App extends React.Component<IAppProps, IAppState> {
       onChangeRepositoryAlias: onChangeRepositoryAlias,
       onRemoveRepositoryAlias: onRemoveRepositoryAlias,
       onViewOnGitHub: this.viewOnGitHub,
+      onViewOnRemote: state.remote
+        ? () => this.viewOnRemote(state.remote!.url)
+        : undefined,
       repository: repository,
       shellLabel: this.state.useCustomShell
         ? undefined
