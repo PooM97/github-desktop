@@ -914,7 +914,6 @@ export class CommitMessage extends React.Component<
 
     return (
       <>
-        <div className="separator" />
         <Button
           className="copilot-button"
           onClick={this.onCopilotButtonClick}
@@ -1020,9 +1019,10 @@ export class CommitMessage extends React.Component<
   }
 
   private renderActionBar() {
-    if (!this.isCoAuthorInputEnabled) {
-      return null
-    }
+    // Remove this so we can always show the action bar (for Copilot)
+    // if (!this.isCoAuthorInputEnabled) {
+    //   return null
+    // }
 
     const { isCommitting, isGeneratingCommitMessage } = this.props
 
@@ -1033,6 +1033,7 @@ export class CommitMessage extends React.Component<
     return (
       <div className={className}>
         {this.renderCoAuthorToggleButton()}
+        {this.isCoAuthorInputEnabled && <div className="separator" />}
         {this.renderCopilotButton()}
       </div>
     )
