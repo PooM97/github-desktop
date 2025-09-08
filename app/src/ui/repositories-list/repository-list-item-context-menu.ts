@@ -14,6 +14,7 @@ interface IRepositoryListItemContextMenuConfig {
   externalEditorLabel: string | undefined
   askForConfirmationOnRemoveRepository: boolean
   onViewOnGitHub: (repository: Repositoryish) => void
+  onViewOnRemote?: () => void
   onOpenInShell: (repository: Repositoryish) => void
   onShowRepository: (repository: Repositoryish) => void
   onOpenInExternalEditor: (repository: Repositoryish) => void
@@ -36,7 +37,26 @@ export const generateRepositoryListContextMenu = (
     ? `Open in ${config.shellLabel}`
     : DefaultShellLabel
 
-  const items: ReadonlyArray<IMenuItem> = [
+  let viewOnRemote: IMenuItem
+  if (
+    config.onViewOnRemote !== undefined &&
+    config.onViewOnRemote !== null &&
+    !github
+  ) {
+    viewOnRemote = {
+      label: __DARWIN__ ? 'View on Remote' : 'View on remote',
+      action: () => config.onViewOnRemote!(),
+      enabled: true,
+    }
+  } else {
+    viewOnRemote = {
+      label: 'View on GitHub',
+      action: () => config.onViewOnGitHub(repository),
+      enabled: github,
+    }
+  }
+
+  const items: Array<IMenuItem> = [
     ...buildAliasMenuItems(config),
     {
       label: __DARWIN__ ? 'Copy Repo Name' : 'Copy repo name',
@@ -47,11 +67,7 @@ export const generateRepositoryListContextMenu = (
       action: () => clipboard.writeText(repository.path),
     },
     { type: 'separator' },
-    {
-      label: 'View on GitHub',
-      action: () => config.onViewOnGitHub(repository),
-      enabled: github,
-    },
+    viewOnRemote,
     {
       label: openInShell,
       action: () => config.onOpenInShell(repository),
