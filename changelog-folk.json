@@ -1,6 +1,7 @@
 {
   "v25": {
     "25.0": [
+      "[Added]: Add Copilot in commit message for non-GitHub repos",
       "[Added]: Add 'View on Remote' option for non-GitHub repos"
     ]
   }
