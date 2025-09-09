@@ -12,6 +12,7 @@ Object.assign(globalThis, {
   __DEV_SECRETS__: false,
   __APP_NAME__: packageInfo.productName,
   __APP_VERSION__: packageInfo.version,
+  __FORK_VERSION__: packageInfo.forkVersion,
   __RELEASE_CHANNEL__: 'development',
   __UPDATES_URL__: '',
   __SHA__: 'test',

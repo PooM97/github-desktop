@@ -35,6 +35,12 @@ declare const __APP_NAME__: string
 declare const __APP_VERSION__: string
 
 /**
+ * The fork version of the app, this is intended to be a compile-time
+ * replacement for getForkVersion
+ */
+declare const __FORK_VERSION__: string
+
+/**
  * The commit id of the repository HEAD at build time.
  * Represented as a 40 character SHA-1 hexadecimal digest string.
  */

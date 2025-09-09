@@ -18,7 +18,7 @@ import { RetryAction } from '../models/retry-actions'
 import { FetchType } from '../models/fetch'
 import { shouldRenderApplicationMenu } from './lib/features'
 import { matchExistingRepository } from '../lib/repository-matching'
-import { getVersion, getName } from './lib/app-proxy'
+import { getVersion, getName, getForkVersion } from './lib/app-proxy'
 import {
   getOS,
   isOSNoLongerSupportedByElectron,
@@ -1716,7 +1716,9 @@ export class App extends React.Component<IAppProps, IAppState> {
           />
         )
       case PopupType.About:
-        const version = __DEV__ ? __SHA__.substring(0, 10) : getVersion()
+        const version = __DEV__
+          ? __SHA__.substring(0, 10) + ` (${getForkVersion()})`
+          : getVersion() + ` (${getForkVersion()})`
 
         return (
           <About
