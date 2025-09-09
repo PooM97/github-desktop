@@ -4,7 +4,7 @@
   "bundleID": "com.github.GitHubClient",
   "companyName": "GitHub, Inc.",
   "version": "3.5.2",
-  "forkVersion": "v25.0",
+  "forkVersion": "v25.0.0",
   "main": "./main.js",
   "repository": {
     "type": "git",
