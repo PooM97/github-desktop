@@ -2063,6 +2063,7 @@ export class App extends React.Component<IAppProps, IAppState> {
             onDismissed={onPopupDismissedFn}
             dispatcher={this.props.dispatcher}
             tagName={popup.tagName}
+            removeOrigin={popup.removeOrigin}
           />
         )
       }

@@ -290,6 +290,7 @@ export type PopupDetail =
       type: PopupType.DeleteTag
       repository: Repository
       tagName: string
+      removeOrigin: boolean
     }
   | {
       type: PopupType.ChooseForkSettings

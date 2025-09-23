@@ -10,6 +10,7 @@ interface IDeleteTagProps {
   readonly dispatcher: Dispatcher
   readonly repository: Repository
   readonly tagName: string
+  readonly removeOrigin: boolean
   readonly onDismissed: () => void
 }
 
@@ -56,11 +57,11 @@ export class DeleteTag extends React.Component<
   }
 
   private DeleteTag = async () => {
-    const { dispatcher, repository, tagName } = this.props
+    const { dispatcher, repository, tagName, removeOrigin } = this.props
 
     this.setState({ isDeleting: true })
 
-    await dispatcher.deleteTag(repository, tagName)
+    await dispatcher.deleteTag(repository, tagName, removeOrigin)
     this.props.onDismissed()
   }
 }

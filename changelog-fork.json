@@ -1,8 +1,9 @@
 {
   "v25": {
     "25.0.0": [
-      "[feature]: Add Copilot in commit message for non-GitHub repos",
-      "[feature]: Add 'View on Remote' option for non-GitHub repos"
+      "[Feature]: Add ability for deleting remote Git tags",
+      "[Feature]: Add Copilot in commit message for non-GitHub repos",
+      "[Feature]: Add 'View on Remote' option for non-GitHub repos"
     ]
   }
 }
