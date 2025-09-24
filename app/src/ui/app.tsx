@@ -199,6 +199,7 @@ import {
   BypassReasonType,
 } from './secret-scanning/bypass-push-protection-dialog'
 import { CompareBranchDialog } from './custom-script'
+import { StreamProcessDialog } from './stream-process'
 
 const MinuteInMilliseconds = 1000 * 60
 const HourInMilliseconds = MinuteInMilliseconds * 60
@@ -2590,6 +2591,17 @@ export class App extends React.Component<IAppProps, IAppState> {
             currentBranch={popup.currentBranch}
             allBranches={popup.allBranches}
             recentBranches={popup.recentBranches}
+          />
+        )
+      }
+      case PopupType.StreamProcess: {
+        return (
+          <StreamProcessDialog
+            key="stream-process-dialog"
+            title={popup.title}
+            process={popup.process}
+            onDismissed={popup.onDismissed}
+            dispatcher={this.props.dispatcher}
           />
         )
       }

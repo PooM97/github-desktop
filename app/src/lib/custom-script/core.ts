@@ -12,7 +12,7 @@ const script: IScript = {
   CompareBranch: [
     {
       name: 'Pylint',
-      path: '/Users/poom/Desktop/custom-scripts/branch/pylint-diff-merge-base.sh',
+      path: '/Users/poom/Documents/github-desktop/fake.sh',
     },
   ],
   ActiveBranch: []

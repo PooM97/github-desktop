@@ -127,6 +127,7 @@ import { isAbsolute } from 'path'
 import { CLIAction } from '../../lib/cli-action'
 import { BypassReasonType } from '../secret-scanning/bypass-push-protection-dialog'
 import { IScriptInfo } from '../../lib/custom-script'
+import { ChildProcess } from 'child_process'
 
 /**
  * An error handler function.
@@ -4089,10 +4090,24 @@ export class Dispatcher {
     })
   }
 
-  public showErrorPopup(error: Error): Promise<void> {
-    return this.appStore._showPopup({
-      type: PopupType.Error,
-      error: error,
+  /**
+   * Shows a streaming process popup that displays real-time stdout and stderr output
+   * from a child process.
+   * 
+   * @param title The title to display in the popup dialog
+   * @param process The child process to monitor
+   * @param onDismissed Optional callback to execute when the popup is dismissed
+   */
+  public startStreamingProcess(
+    title: string,
+    process: ChildProcess,
+    onDismissed?: () => void
+  ): void {
+    this.showPopup({
+      type: PopupType.StreamProcess,
+      title,
+      process,
+      onDismissed,
     })
   }
 }
