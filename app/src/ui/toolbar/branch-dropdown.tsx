@@ -27,6 +27,7 @@ import { generateBranchContextMenuItems } from '../branches/branch-list-item-con
 import { showContextualMenu } from '../../lib/menu-item'
 import { Emoji } from '../../lib/emoji'
 import { enableResizingToolbarButtons } from '../../lib/feature-flag'
+import { IScriptInfo } from '../../lib/custom-script'
 
 interface IBranchDropdownProps {
   readonly dispatcher: Dispatcher
@@ -313,6 +314,11 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
         ? this.onViewPullRequestOnGithub
         : undefined,
       onDeleteBranch: this.onDeleteBranch,
+      onExecCompareBranchScript: (script: IScriptInfo) =>
+        this.props.dispatcher.onExecCompareBranchScript(
+          script,
+          this.props.repository
+        ),
     })
 
     showContextualMenu(items)

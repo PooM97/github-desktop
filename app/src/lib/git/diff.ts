@@ -850,3 +850,41 @@ async function getFilesUsingBinaryMergeDriver(
 // https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-top
 const ensureRelativePath = (path: string) =>
   isAbsolute(path) ? `:(top,literal)${path}` : path
+
+
+/**
+ * List changed files (name-only) between two refs, supporting both merge-base (triple-dot) and two-dot comparison.
+ *
+ * @param repository The repository to run Git in
+ * @param baseRef The base ref (e.g. 'main')
+ * @param comparisonRef The comparison ref (e.g. 'feature-branch')
+ * @param options Configuration options for the comparison
+ * @param options.diffFilter Optional Git diff-filter (e.g. 'ACMRT') - filters files by change type
+ * @param options.pathspecs Optional pathspecs to filter files (e.g. ['src/']) - limits to specific paths
+ * @param options.useMergeBase If true, use triple-dot (merge-base) comparison; otherwise, use two-dot comparison
+ * 
+ * @returns Promise resolving to array of changed file paths
+ */
+export async function getChangedFileNames(
+  repository: Repository,
+  baseRef: string,
+  comparisonRef: string,
+  options: { diffFilter?: string; pathspecs?: string[]; useMergeBase?: boolean }
+): Promise<ReadonlyArray<string>> {
+  const args = [
+    'diff',
+    '--name-only',
+    ...(options.diffFilter && options.diffFilter.length > 0
+      ? [`--diff-filter=${options.diffFilter}`]
+      : []),
+    '-z',
+    options.useMergeBase ? `${baseRef}...${comparisonRef}` : baseRef,
+    ...(options.useMergeBase ? [] : [comparisonRef]),
+    '--',
+    ...(options.pathspecs || []),
+  ]
+  const { stdout } = await git(args, repository.path, 'getChangedFileNames')
+
+  // Split NUL-delimited list and drop empty entries
+  return stdout.split('\0').filter(x => x.length > 0)
+}

@@ -1,0 +1,19 @@
+.git-diff-script-preview {
+  margin: 0 auto var(--spacing) auto;
+  margin-top: var(--spacing-half);
+
+  &-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--spacing);
+  }
+
+  &-column {
+    flex: 1;
+  }
+}
+
+.exec-branch-script-button {
+  height: 30px;
+}

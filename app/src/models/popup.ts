@@ -25,6 +25,7 @@ import { UnreachableCommitsTab } from '../ui/history/unreachable-commits-dialog'
 import { IAPIComment } from '../lib/api'
 import { ISecretScanResult } from '../ui/secret-scanning/push-protection-error-dialog'
 import { BypassReasonType } from '../ui/secret-scanning/bypass-push-protection-dialog'
+import { IScriptInfo } from '../lib/custom-script'
 
 export enum PopupType {
   RenameBranch = 'RenameBranch',
@@ -103,6 +104,7 @@ export enum PopupType {
   BypassPushProtection = 'BypassPushProtection',
   GenerateCommitMessageOverrideWarning = 'GenerateCommitMessageOverrideWarning',
   GenerateCommitMessageDisclaimer = 'GenerateCommitMessageDisclaimer',
+  CompareBranchScript = 'CompareBranchScript',
 }
 
 interface IBasePopup {
@@ -465,5 +467,15 @@ export type PopupDetail =
       repository: Repository
       filesSelected: ReadonlyArray<WorkingDirectoryFileChange>
     }
+  | {
+      type: PopupType.CompareBranchScript
+      scriptInfo: IScriptInfo
+      repository: Repository
+      defaultBranch: Branch | null
+      currentBranch: Branch
+      allBranches: ReadonlyArray<Branch>
+      recentBranches: ReadonlyArray<Branch>
+    }
+
 
 export type Popup = IBasePopup & PopupDetail
