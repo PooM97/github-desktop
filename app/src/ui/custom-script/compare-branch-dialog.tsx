@@ -152,13 +152,20 @@ export class CompareBranchDialog extends React.Component<
 
     dispatcher.closePopup(PopupType.CompareBranchScript)
 
-    ExecCompareBranchScript(
+    // Create the child process
+    const childProcess = ExecCompareBranchScript(
       scriptInfo,
       repository,
       currentBranch,
       selectedBranch,
       FileChangeDiffBase,
       FileChangeMergeBase
+    )
+
+    // Show the streaming popup
+    dispatcher.startStreamingProcess(
+      `${scriptInfo.name}: ${currentBranch.name} ... ${selectedBranch.name}`,
+      childProcess
     )
   }
 

@@ -26,6 +26,7 @@ import { IAPIComment } from '../lib/api'
 import { ISecretScanResult } from '../ui/secret-scanning/push-protection-error-dialog'
 import { BypassReasonType } from '../ui/secret-scanning/bypass-push-protection-dialog'
 import { IScriptInfo } from '../lib/custom-script'
+import { ChildProcess } from 'child_process'
 
 export enum PopupType {
   RenameBranch = 'RenameBranch',
@@ -105,6 +106,7 @@ export enum PopupType {
   GenerateCommitMessageOverrideWarning = 'GenerateCommitMessageOverrideWarning',
   GenerateCommitMessageDisclaimer = 'GenerateCommitMessageDisclaimer',
   CompareBranchScript = 'CompareBranchScript',
+  StreamProcess = 'StreamProcess',
 }
 
 interface IBasePopup {
@@ -475,6 +477,12 @@ export type PopupDetail =
       currentBranch: Branch
       allBranches: ReadonlyArray<Branch>
       recentBranches: ReadonlyArray<Branch>
+    }
+  | {
+      type: PopupType.StreamProcess
+      title: string
+      process: ChildProcess
+      onDismissed?: () => void
     }
 
 
