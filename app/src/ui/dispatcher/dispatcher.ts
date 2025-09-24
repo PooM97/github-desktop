@@ -126,6 +126,7 @@ import { ICustomIntegration } from '../../lib/custom-integration'
 import { isAbsolute } from 'path'
 import { CLIAction } from '../../lib/cli-action'
 import { BypassReasonType } from '../secret-scanning/bypass-push-protection-dialog'
+import { IScriptInfo } from '../../lib/custom-script'
 
 /**
  * An error handler function.
@@ -4057,5 +4058,37 @@ export class Dispatcher {
 
   public toggleChangesFilterVisibility() {
     this.appStore._toggleChangesFilterVisibility()
+  }
+
+  public async onExecCompareBranchScript(
+    script: IScriptInfo,
+    repository: Repository
+  ) {
+    const { branchesState } = this.repositoryStateManager.get(repository)
+    const { defaultBranch, allBranches, recentBranches, tip } = branchesState
+
+    let currentBranch: Branch | null = null
+    if (tip.kind === TipState.Valid) {
+      currentBranch = tip.branch
+    } else {
+      throw new Error('Tip is not in a valid state')
+    }
+
+    this.showPopup({
+      type: PopupType.CompareBranchScript,
+      scriptInfo: script,
+      repository: repository,
+      defaultBranch: defaultBranch,
+      currentBranch: currentBranch,
+      allBranches: allBranches,
+      recentBranches: recentBranches,
+    })
+  }
+
+  public showErrorPopup(error: Error): Promise<void> {
+    return this.appStore._showPopup({
+      type: PopupType.Error,
+      error: error,
+    })
   }
 }
