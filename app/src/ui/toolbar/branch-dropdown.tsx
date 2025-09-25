@@ -295,9 +295,9 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
     }
   }
 
-  private onBranchToolbarButtonContextMenu = (
+  private onBranchToolbarButtonContextMenu = async (
     event: React.MouseEvent<HTMLButtonElement>
-  ): void => {
+  ): Promise<void> => {
     event.preventDefault()
 
     const { tip } = this.props.repositoryState.branchesState
@@ -306,7 +306,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
       return
     }
 
-    const items = generateBranchContextMenuItems({
+    const items = await generateBranchContextMenuItems({
       name: tip.branch.name,
       isLocal: tip.branch.type === BranchType.Local,
       onRenameBranch: this.onRenameBranch,

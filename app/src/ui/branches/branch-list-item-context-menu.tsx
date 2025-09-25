@@ -1,4 +1,4 @@
-import { getScripts, IScriptInfo } from '../../lib/custom-script'
+import { getScript, IScriptInfo } from '../../lib/custom-script'
 import { IMenuItem } from '../../lib/menu-item'
 import { clipboard } from 'electron'
 
@@ -11,19 +11,19 @@ interface IBranchContextMenuConfig {
   onExecCompareBranchScript?: (script: IScriptInfo) => void
 }
 
-function getCompareBranchScriptMenuItems(
+async function getCompareBranchScriptMenuItems(
   fn: (script: IScriptInfo) => void
-): ReadonlyArray<IMenuItem> {
-  const scripts = getScripts('CompareBranch')
+): Promise<ReadonlyArray<IMenuItem>> {
+  const scripts = await getScript('CompareBranch')
   return scripts.map(script => ({
     label: script.name,
     action: () => fn(script),
   }))
 }
 
-export function generateBranchContextMenuItems(
+export async function generateBranchContextMenuItems(
   config: IBranchContextMenuConfig
-): IMenuItem[] {
+): Promise<IMenuItem[]> {
   const {
     name,
     isLocal,
@@ -62,7 +62,7 @@ export function generateBranchContextMenuItems(
   // Add Compare Branch scripts if available
   if (onExecCompareBranchScript !== undefined) {
     runScriptSubmenu.push(
-      ...getCompareBranchScriptMenuItems(onExecCompareBranchScript)
+      ...(await getCompareBranchScriptMenuItems(onExecCompareBranchScript))
     )
   }
 
