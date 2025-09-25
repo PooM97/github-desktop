@@ -62,14 +62,6 @@ export async function generateBranchContextMenuItems(
 
   // Prepare submenu for running scripts
   const runScriptSubmenu = new Array<IMenuItem>()
-
-  // Add Compare Branch scripts if available
-  if (onExecCompareBranchScript !== undefined) {
-    runScriptSubmenu.push(
-      ...(await getCompareBranchScriptMenuItems(onExecCompareBranchScript))
-    )
-  }
-
   const manageScriptsMenu = {
     label: __DARWIN__ ? 'Manage Scripts' : 'Manage scripts',
     action: async () => {
@@ -80,15 +72,21 @@ export async function generateBranchContextMenuItems(
     },
   }
 
-  if (runScriptSubmenu.length > 0) {
-    runScriptSubmenu.push({ type: 'separator' })
-    runScriptSubmenu.push(manageScriptsMenu)
-    items.push({
-      label: __DARWIN__ ? 'Run Scripts' : 'Run scripts',
-      submenu: runScriptSubmenu,
-    })
-  } else {
-    items.push(manageScriptsMenu)
+  // Add Compare Branch scripts if available
+  if (onExecCompareBranchScript !== undefined) {
+    runScriptSubmenu.push(
+      ...(await getCompareBranchScriptMenuItems(onExecCompareBranchScript))
+    )
+    if (runScriptSubmenu.length > 0) {
+      runScriptSubmenu.push({ type: 'separator' })
+      runScriptSubmenu.push(manageScriptsMenu)
+      items.push({
+        label: __DARWIN__ ? 'Run Scripts' : 'Run scripts',
+        submenu: runScriptSubmenu,
+      })
+    } else {
+      items.push(manageScriptsMenu)
+    }
   }
 
   items.push({ type: 'separator' })
