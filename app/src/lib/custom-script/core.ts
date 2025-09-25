@@ -16,10 +16,10 @@ export type scriptType = 'CompareBranch' | 'ActiveBranch'
 
 const defaultScript: IScript = {
   ActiveBranch: [],
-  CompareBranch: []
+  CompareBranch: [],
 }
 
-let cachedScript: IScript | null = null;
+let cachedScript: IScript | null = null
 
 /**
  * Get the path to a file or directory in the user data directory.
@@ -48,8 +48,8 @@ export async function readCustomScript(): Promise<IScript> {
  */
 export async function getScript(type: scriptType): Promise<IScriptInfo[]> {
   if (cachedScript) {
-    return cachedScript[type];
+    return cachedScript[type]
   }
-  const script = await readCustomScript();
-  return script[type];
+  const script = await readCustomScript()
+  return script[type]
 }
