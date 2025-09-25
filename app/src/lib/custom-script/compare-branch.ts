@@ -3,14 +3,13 @@ import { Repository } from '../../models/repository'
 import { spawn, ChildProcess } from 'child_process'
 import { IScriptInfo } from './core'
 
-
 export function ExecCompareBranchScript(
   script: IScriptInfo,
   repository: Repository,
   currentBranch: Branch,
   selectedBranch: Branch,
   fileChangeDiffBase: ReadonlyArray<string>,
-  fileChangeMergeBase: ReadonlyArray<string>,
+  fileChangeMergeBase: ReadonlyArray<string>
 ): ChildProcess {
   const args = [
     script.path,

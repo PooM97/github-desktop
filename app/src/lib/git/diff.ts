@@ -851,7 +851,6 @@ async function getFilesUsingBinaryMergeDriver(
 const ensureRelativePath = (path: string) =>
   isAbsolute(path) ? `:(top,literal)${path}` : path
 
-
 /**
  * List changed files (name-only) between two refs, supporting both merge-base (triple-dot) and two-dot comparison.
  *
@@ -862,7 +861,7 @@ const ensureRelativePath = (path: string) =>
  * @param options.diffFilter Optional Git diff-filter (e.g. 'ACMRT') - filters files by change type
  * @param options.pathspecs Optional pathspecs to filter files (e.g. ['src/']) - limits to specific paths
  * @param options.useMergeBase If true, use triple-dot (merge-base) comparison; otherwise, use two-dot comparison
- * 
+ *
  * @returns Promise resolving to array of changed file paths
  */
 export async function getChangedFileNames(

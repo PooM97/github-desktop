@@ -485,5 +485,4 @@ export type PopupDetail =
       onDismissed?: () => void
     }
 
-
 export type Popup = IBasePopup & PopupDetail

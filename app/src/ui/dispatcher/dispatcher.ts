@@ -4089,7 +4089,7 @@ export class Dispatcher {
   /**
    * Shows a streaming process popup that displays real-time stdout and stderr output
    * from a child process.
-   * 
+   *
    * @param title The title to display in the popup dialog
    * @param process The child process to monitor
    * @param onDismissed Optional callback to execute when the popup is dismissed
