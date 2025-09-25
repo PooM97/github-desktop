@@ -270,7 +270,7 @@ export class BranchList extends React.Component<
     )
   }
 
-  private onBranchContextMenu = (
+  private onBranchContextMenu = async (
     item: IBranchListItem,
     event: React.MouseEvent<HTMLDivElement>
   ) => {
@@ -285,7 +285,7 @@ export class BranchList extends React.Component<
     const { type, name } = item.branch
     const isLocal = type === BranchType.Local
 
-    const items = generateBranchContextMenuItems({
+    const items = await generateBranchContextMenuItems({
       name,
       isLocal,
       onRenameBranch,
