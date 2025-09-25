@@ -3,8 +3,8 @@ import { getPath } from '../../ui/main-process-proxy'
 import { readFileSync, writeFileSync, existsSync } from 'fs-extra'
 
 export interface IScript {
-  CompareBranch: IScriptInfo[]
   ActiveBranch: IScriptInfo[]
+  CompareBranch: IScriptInfo[]
 }
 
 export interface IScriptInfo {

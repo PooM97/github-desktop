@@ -319,6 +319,8 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
           script,
           this.props.repository
         ),
+      onManageScript: (path: string) =>
+        this.props.dispatcher.openInExternalEditor(path),
     })
 
     showContextualMenu(items)
