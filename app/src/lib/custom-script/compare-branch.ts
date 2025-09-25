@@ -14,17 +14,10 @@ export function ExecCompareBranchScript(
 ): ChildProcess {
   const args = [
     script.path,
-    '--currentBranch',
-    currentBranch.name,
-    '--compareBranch',
-    selectedBranch.name,
-    '--fileChangeDiffBase',
-    ...fileChangeDiffBase,
-    '--fileChangeMergeBase',
-    ...fileChangeMergeBase,
+    `--currentBranch=${currentBranch.name}`,
+    `--compareBranch=${selectedBranch.name}`,
+    `--fileChangeDiffBase=${fileChangeDiffBase.join(',')}`,
+    `--fileChangeMergeBase=${fileChangeMergeBase.join(',')}`,
   ]
-
-  const child = spawn('bash', args, { cwd: repository.path, env: process.env })
-  
-  return child
+  return spawn('bash', args, { cwd: repository.path, env: process.env })
 }
