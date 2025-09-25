@@ -4066,7 +4066,7 @@ export class Dispatcher {
   }
 
   public async onExecCompareBranchScript(
-    script: IScriptInfo,
+    scriptInfo: IScriptInfo,
     repository: Repository
   ) {
     const { branchesState } = this.repositoryStateManager.get(repository)
@@ -4081,7 +4081,7 @@ export class Dispatcher {
 
     this.showPopup({
       type: PopupType.CompareBranchScript,
-      scriptInfo: script,
+      scriptInfo: scriptInfo,
       repository: repository,
       defaultBranch: defaultBranch,
       currentBranch: currentBranch,
