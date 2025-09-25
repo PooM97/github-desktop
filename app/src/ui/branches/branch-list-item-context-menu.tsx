@@ -1,4 +1,8 @@
-import { getScript, IScriptInfo } from '../../lib/custom-script'
+import {
+  getScript,
+  getCustomScriptPath,
+  IScriptInfo,
+} from '../../lib/custom-script'
 import { IMenuItem } from '../../lib/menu-item'
 import { clipboard } from 'electron'
 
@@ -9,6 +13,7 @@ interface IBranchContextMenuConfig {
   onViewPullRequestOnGitHub?: () => void
   onDeleteBranch?: (branchName: string) => void
   onExecCompareBranchScript?: (script: IScriptInfo) => void
+  onManageScript?: (path: string) => void
 }
 
 async function getCompareBranchScriptMenuItems(
@@ -31,6 +36,7 @@ export async function generateBranchContextMenuItems(
     onViewPullRequestOnGitHub,
     onDeleteBranch,
     onExecCompareBranchScript,
+    onManageScript,
   } = config
   const items = new Array<IMenuItem>()
 
@@ -54,8 +60,6 @@ export async function generateBranchContextMenuItems(
     })
   }
 
-  items.push({ type: 'separator' })
-
   // Prepare submenu for running scripts
   const runScriptSubmenu = new Array<IMenuItem>()
 
@@ -66,15 +70,28 @@ export async function generateBranchContextMenuItems(
     )
   }
 
+  const manageScriptsMenu = {
+    label: __DARWIN__ ? 'Manage Scripts' : 'Manage scripts',
+    action: async () => {
+      if (onManageScript) {
+        const scriptPath = await getCustomScriptPath()
+        onManageScript(scriptPath)
+      }
+    },
+  }
+
   if (runScriptSubmenu.length > 0) {
+    runScriptSubmenu.push({ type: 'separator' })
+    runScriptSubmenu.push(manageScriptsMenu)
     items.push({
       label: __DARWIN__ ? 'Run Scripts' : 'Run scripts',
       submenu: runScriptSubmenu,
     })
+  } else {
+    items.push(manageScriptsMenu)
   }
 
   items.push({ type: 'separator' })
-
   if (onDeleteBranch !== undefined) {
     items.push({
       label: 'Delete…',
