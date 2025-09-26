@@ -37,6 +37,10 @@ export function ExecCompareBranchScript(
     `--fileChangeMergeBase=${fileChangeMergeBase.join(',')}`,
   ]
 
+  if (!scriptInfo.path) {
+    throw Error('Script path is undefined')
+  }
+
   const bashScriptPath = __WIN32__
     ? convertWindowsPathForBash(scriptInfo.path)
     : scriptInfo.path

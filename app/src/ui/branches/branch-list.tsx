@@ -286,10 +286,12 @@ export class BranchList extends React.Component<
 
     const { type, name } = item.branch
     const isLocal = type === BranchType.Local
+    const repository = this.props.repository
 
     const items = await generateBranchContextMenuItems({
       name,
       isLocal,
+      repository,
       onRenameBranch,
       onDeleteBranch,
     })
