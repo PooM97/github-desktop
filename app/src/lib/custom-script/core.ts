@@ -8,8 +8,9 @@ export interface IScript {
 }
 
 export interface IScriptInfo {
-  name: string
-  path: string
+  name: string | undefined,
+  path: string | undefined,
+  repositories: string[] | undefined
 }
 
 export type scriptType = 'CompareBranch' | 'ActiveBranch'

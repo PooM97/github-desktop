@@ -5,10 +5,12 @@ import {
 } from '../../lib/custom-script'
 import { IMenuItem } from '../../lib/menu-item'
 import { clipboard } from 'electron'
+import { Repository } from '../../models/repository'
 
 interface IBranchContextMenuConfig {
   name: string
   isLocal: boolean
+  repository: Repository
   onRenameBranch?: (branchName: string) => void
   onViewPullRequestOnGitHub?: () => void
   onDeleteBranch?: (branchName: string) => void
@@ -17,13 +19,21 @@ interface IBranchContextMenuConfig {
 }
 
 async function getCompareBranchScriptMenuItems(
-  fn: (script: IScriptInfo) => void
+  fn: (script: IScriptInfo) => void,
+  repository: Repository
 ): Promise<ReadonlyArray<IMenuItem>> {
   const scripts = await getScript('CompareBranch')
-  return scripts.map(script => ({
-    label: script.name,
-    action: () => fn(script),
-  }))
+
+  const items: IMenuItem[] = []
+  for (const script of scripts) {
+    if (script.repositories && script.repositories.includes(repository.name)) {
+      items.push({
+        label: script.name,
+        action: () => fn(script),
+      })
+    }
+  }
+  return items
 }
 
 export async function generateBranchContextMenuItems(
@@ -32,6 +42,7 @@ export async function generateBranchContextMenuItems(
   const {
     name,
     isLocal,
+    repository,
     onRenameBranch,
     onViewPullRequestOnGitHub,
     onDeleteBranch,
@@ -75,7 +86,10 @@ export async function generateBranchContextMenuItems(
   // Add Compare Branch scripts if available
   if (onExecCompareBranchScript !== undefined) {
     runScriptSubmenu.push(
-      ...(await getCompareBranchScriptMenuItems(onExecCompareBranchScript))
+      ...(await getCompareBranchScriptMenuItems(
+        onExecCompareBranchScript,
+        repository
+      ))
     )
     if (runScriptSubmenu.length > 0) {
       runScriptSubmenu.push({ type: 'separator' })

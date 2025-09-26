@@ -309,6 +309,7 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
     const items = await generateBranchContextMenuItems({
       name: tip.branch.name,
       isLocal: tip.branch.type === BranchType.Local,
+      repository: this.props.repository,
       onRenameBranch: this.onRenameBranch,
       onViewPullRequestOnGitHub: this.props.currentPullRequest
         ? this.onViewPullRequestOnGithub
