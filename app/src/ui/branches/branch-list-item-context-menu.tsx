@@ -74,7 +74,7 @@ export async function generateBranchContextMenuItems(
   // Prepare submenu for running scripts
   const runScriptSubmenu = new Array<IMenuItem>()
   const manageScriptsMenu = {
-    label: __DARWIN__ ? 'Manage Scripts' : 'Manage scripts',
+    label: __DARWIN__ ? 'Open Config' : 'Open config',
     action: async () => {
       if (onManageScript) {
         const scriptPath = await getCustomScriptPath()
@@ -91,11 +91,12 @@ export async function generateBranchContextMenuItems(
         repository
       ))
     )
+    items.push({ type: 'separator' })
     if (runScriptSubmenu.length > 0) {
       runScriptSubmenu.push({ type: 'separator' })
       runScriptSubmenu.push(manageScriptsMenu)
       items.push({
-        label: __DARWIN__ ? 'Run Scripts' : 'Run scripts',
+        label: __DARWIN__ ? 'Execute Script' : 'Execute script',
         submenu: runScriptSubmenu,
       })
     } else {
