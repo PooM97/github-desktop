@@ -1,6 +1,6 @@
 {
   "25.0.0": [
-    "[Feature]: Add ability to run script `compare branch script` on branch context menu",
+    "[Feature]: Add ability to run script `active and compare branch script` on branch context menu",
     "[Feature]: Add ability for deleting remote Git tags",
     "[Feature]: Add Copilot in commit message for non-GitHub repos",
     "[Feature]: Add 'View on Remote' option for non-GitHub repos"
