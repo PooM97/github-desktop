@@ -315,6 +315,12 @@ export class BranchDropdown extends React.Component<IBranchDropdownProps> {
         ? this.onViewPullRequestOnGithub
         : undefined,
       onDeleteBranch: this.onDeleteBranch,
+      // Custom script handlers
+      onExecActiveBranchScript: (script: IScriptInfo) =>
+        this.props.dispatcher.onExecActiveBranchScript(
+          script,
+          this.props.repository
+        ),
       onExecCompareBranchScript: (script: IScriptInfo) =>
         this.props.dispatcher.onExecCompareBranchScript(
           script,

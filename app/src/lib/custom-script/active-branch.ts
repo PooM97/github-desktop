@@ -4,19 +4,13 @@ import { spawn, ChildProcess } from 'child_process'
 import { IScriptInfo, convertWindowsPathForBash } from './core'
 
 
-export function execCompareBranchScript(
+export function execActiveBranchScript(
   scriptInfo: IScriptInfo,
   repository: Repository,
   currentBranch: Branch,
-  selectedBranch: Branch,
-  fileChangeDiffBase: ReadonlyArray<string>,
-  fileChangeMergeBase: ReadonlyArray<string>
 ): ChildProcess {
   const args = [
     `--currentBranch=${currentBranch.name}`,
-    `--compareBranch=${selectedBranch.name}`,
-    `--fileChangeDiffBase=${fileChangeDiffBase.join(',')}`,
-    `--fileChangeMergeBase=${fileChangeMergeBase.join(',')}`,
   ]
 
   if (!scriptInfo.path) {

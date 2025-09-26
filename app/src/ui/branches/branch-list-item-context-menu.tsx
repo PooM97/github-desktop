@@ -14,6 +14,7 @@ interface IBranchContextMenuConfig {
   onRenameBranch?: (branchName: string) => void
   onViewPullRequestOnGitHub?: () => void
   onDeleteBranch?: (branchName: string) => void
+  onExecActiveBranchScript?: (script: IScriptInfo) => void
   onExecCompareBranchScript?: (script: IScriptInfo) => void
   onManageScript?: (path: string) => void
 }
@@ -23,6 +24,24 @@ async function getCompareBranchScriptMenuItems(
   repository: Repository
 ): Promise<ReadonlyArray<IMenuItem>> {
   const scripts = await getScript('CompareBranch')
+
+  const items: IMenuItem[] = []
+  for (const script of scripts) {
+    if (script.repositories && script.repositories.includes(repository.name)) {
+      items.push({
+        label: script.name,
+        action: () => fn(script),
+      })
+    }
+  }
+  return items
+}
+
+async function getActiveScriptMenuItems(
+  fn: (script: IScriptInfo) => void,
+  repository: Repository
+): Promise<ReadonlyArray<IMenuItem>> {
+  const scripts = await getScript('ActiveBranch')
 
   const items: IMenuItem[] = []
   for (const script of scripts) {
@@ -47,6 +66,7 @@ export async function generateBranchContextMenuItems(
     onViewPullRequestOnGitHub,
     onDeleteBranch,
     onExecCompareBranchScript,
+    onExecActiveBranchScript,
     onManageScript,
   } = config
   const items = new Array<IMenuItem>()
@@ -73,8 +93,26 @@ export async function generateBranchContextMenuItems(
 
   // Prepare submenu for running scripts
   const runScriptSubmenu = new Array<IMenuItem>()
+
+  if (onExecActiveBranchScript !== undefined) {
+    runScriptSubmenu.push(
+      ...(await getActiveScriptMenuItems(onExecActiveBranchScript, repository))
+    )
+  }
+
+  if (onExecCompareBranchScript !== undefined) {
+    runScriptSubmenu.push(
+      ...(await getCompareBranchScriptMenuItems(
+        onExecCompareBranchScript,
+        repository
+      ))
+    )
+  }
+
+  // Add the "Execute Script" submenu if there are any scripts available otherwise add the "Manage Scripts" item
+  items.push({ type: 'separator' })
   const manageScriptsMenu = {
-    label: __DARWIN__ ? 'Open Config' : 'Open config',
+    label: __DARWIN__ ? 'Manage Script' : 'Manage script',
     action: async () => {
       if (onManageScript) {
         const scriptPath = await getCustomScriptPath()
@@ -83,25 +121,16 @@ export async function generateBranchContextMenuItems(
     },
   }
 
-  // Add Compare Branch scripts if available
-  if (onExecCompareBranchScript !== undefined) {
-    runScriptSubmenu.push(
-      ...(await getCompareBranchScriptMenuItems(
-        onExecCompareBranchScript,
-        repository
-      ))
-    )
-    items.push({ type: 'separator' })
-    if (runScriptSubmenu.length > 0) {
-      runScriptSubmenu.push({ type: 'separator' })
-      runScriptSubmenu.push(manageScriptsMenu)
-      items.push({
-        label: __DARWIN__ ? 'Execute Script' : 'Execute script',
-        submenu: runScriptSubmenu,
-      })
-    } else {
-      items.push(manageScriptsMenu)
-    }
+  if (runScriptSubmenu.length > 0) {
+    runScriptSubmenu.push({ type: 'separator' })
+    runScriptSubmenu.push(manageScriptsMenu)
+
+    items.push({
+      label: __DARWIN__ ? 'Execute Script' : 'Execute script',
+      submenu: runScriptSubmenu,
+    })
+  } else {
+    items.push(manageScriptsMenu)
   }
 
   items.push({ type: 'separator' })
