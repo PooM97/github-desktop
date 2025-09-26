@@ -128,6 +128,7 @@ import { CLIAction } from '../../lib/cli-action'
 import { BypassReasonType } from '../secret-scanning/bypass-push-protection-dialog'
 import { IScriptInfo } from '../../lib/custom-script'
 import { ChildProcess } from 'child_process'
+import { execActiveBranchScript } from '../../lib/custom-script/active-branch'
 
 /**
  * An error handler function.
@@ -4063,6 +4064,25 @@ export class Dispatcher {
 
   public toggleChangesFilterVisibility() {
     this.appStore._toggleChangesFilterVisibility()
+  }
+
+  public async onExecActiveBranchScript(
+    scriptInfo: IScriptInfo,
+    repository: Repository,
+  ) {
+    const { branchesState } = this.repositoryStateManager.get(repository)
+    const { tip } = branchesState
+    
+    if (tip.kind === TipState.Valid) {
+      const currentBranch = tip.branch
+      this.startStreamingProcess(
+        `${scriptInfo.name}: ${repository.name}`,
+        execActiveBranchScript(scriptInfo, repository, currentBranch),
+      )
+    } else {
+      throw new Error('Tip is not in a valid state')
+    }
+
   }
 
   public async onExecCompareBranchScript(

@@ -11,7 +11,7 @@ import { PopupType } from '../../models/popup'
 import { Button } from '../lib/button'
 import { getAheadBehind, revSymmetricDifference } from '../../lib/git/rev-list'
 import { IAheadBehind } from '../../models/branch'
-import { ExecCompareBranchScript, IScriptInfo } from '../../lib/custom-script'
+import { execCompareBranchScript, IScriptInfo } from '../../lib/custom-script'
 import { getChangedFileNames } from '../../lib/git'
 
 interface ICompareBranchDialogProps {
@@ -153,7 +153,7 @@ export class CompareBranchDialog extends React.Component<
     dispatcher.closePopup(PopupType.CompareBranchScript)
 
     // Create the child process
-    const childProcess = ExecCompareBranchScript(
+    const childProcess = execCompareBranchScript(
       scriptInfo,
       repository,
       currentBranch,
