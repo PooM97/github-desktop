@@ -3,15 +3,12 @@ import { Repository } from '../../models/repository'
 import { spawn, ChildProcess } from 'child_process'
 import { IScriptInfo, convertWindowsPathForBash } from './core'
 
-
 export function execActiveBranchScript(
   scriptInfo: IScriptInfo,
   repository: Repository,
-  currentBranch: Branch,
+  currentBranch: Branch
 ): ChildProcess {
-  const args = [
-    `--currentBranch=${currentBranch.name}`,
-  ]
+  const args = [`--currentBranch=${currentBranch.name}`]
 
   if (!scriptInfo.path) {
     throw Error('Script path is undefined')

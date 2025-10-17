@@ -4064,21 +4064,20 @@ export class Dispatcher {
 
   public async onExecActiveBranchScript(
     scriptInfo: IScriptInfo,
-    repository: Repository,
+    repository: Repository
   ) {
     const { branchesState } = this.repositoryStateManager.get(repository)
     const { tip } = branchesState
-    
+
     if (tip.kind === TipState.Valid) {
       const currentBranch = tip.branch
       this.startStreamingProcess(
         `${scriptInfo.name}: ${repository.name}`,
-        execActiveBranchScript(scriptInfo, repository, currentBranch),
+        execActiveBranchScript(scriptInfo, repository, currentBranch)
       )
     } else {
       throw new Error('Tip is not in a valid state')
     }
-
   }
 
   public async onExecCompareBranchScript(

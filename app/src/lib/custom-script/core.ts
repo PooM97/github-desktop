@@ -8,8 +8,8 @@ export interface IScript {
 }
 
 export interface IScriptInfo {
-  name: string | undefined,
-  path: string | undefined,
+  name: string | undefined
+  path: string | undefined
   repositories: string[] | undefined
 }
 
@@ -62,7 +62,7 @@ export async function getScript(type: scriptType): Promise<IScriptInfo[]> {
 export function convertWindowsPathForBash(windowsPath: string): string {
   // Handle both forward and backslashes
   const normalizedPath = windowsPath.replace(/\\/g, '/')
-  
+
   // Check if it's an absolute Windows path (starts with drive letter)
   const driveMatch = normalizedPath.match(/^([A-Za-z]):\/(.*)/)
   if (driveMatch) {

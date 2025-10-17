@@ -3,7 +3,6 @@ import { Repository } from '../../models/repository'
 import { spawn, ChildProcess } from 'child_process'
 import { IScriptInfo, convertWindowsPathForBash } from './core'
 
-
 export function execCompareBranchScript(
   scriptInfo: IScriptInfo,
   repository: Repository,
