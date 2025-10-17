@@ -91,46 +91,50 @@ export async function generateBranchContextMenuItems(
     })
   }
 
-  // Prepare submenu for running scripts
-  const runScriptSubmenu = new Array<IMenuItem>()
+  if (onManageScript !== undefined) {
+    // Add the "Execute Script" submenu if there are any scripts available otherwise add the "Manage Scripts" item
+    const manageScriptsMenu = {
+      label: __DARWIN__ ? 'Manage Scripts' : 'Manage scripts',
+      action: async () => {
+        if (onManageScript) {
+          const scriptPath = await getCustomScriptPath()
+          onManageScript(scriptPath)
+        }
+      },
+    }
 
-  if (onExecActiveBranchScript !== undefined) {
-    runScriptSubmenu.push(
-      ...(await getActiveScriptMenuItems(onExecActiveBranchScript, repository))
-    )
-  }
+    // Prepare submenu for running scripts
+    const runScriptSubmenu = new Array<IMenuItem>()
 
-  if (onExecCompareBranchScript !== undefined) {
-    runScriptSubmenu.push(
-      ...(await getCompareBranchScriptMenuItems(
-        onExecCompareBranchScript,
-        repository
-      ))
-    )
-  }
+    if (onExecActiveBranchScript !== undefined) {
+      runScriptSubmenu.push(
+        ...(await getActiveScriptMenuItems(
+          onExecActiveBranchScript,
+          repository
+        ))
+      )
+    }
 
-  // Add the "Execute Script" submenu if there are any scripts available otherwise add the "Manage Scripts" item
-  items.push({ type: 'separator' })
-  const manageScriptsMenu = {
-    label: __DARWIN__ ? 'Manage Script' : 'Manage script',
-    action: async () => {
-      if (onManageScript) {
-        const scriptPath = await getCustomScriptPath()
-        onManageScript(scriptPath)
-      }
-    },
-  }
+    if (onExecCompareBranchScript !== undefined) {
+      runScriptSubmenu.push(
+        ...(await getCompareBranchScriptMenuItems(
+          onExecCompareBranchScript,
+          repository
+        ))
+      )
+    }
 
-  if (runScriptSubmenu.length > 0) {
-    runScriptSubmenu.push({ type: 'separator' })
-    runScriptSubmenu.push(manageScriptsMenu)
+    if (runScriptSubmenu.length > 0) {
+      runScriptSubmenu.push({ type: 'separator' })
+      runScriptSubmenu.push(manageScriptsMenu)
 
-    items.push({
-      label: __DARWIN__ ? 'Execute Script' : 'Execute script',
-      submenu: runScriptSubmenu,
-    })
-  } else {
-    items.push(manageScriptsMenu)
+      items.push({
+        label: __DARWIN__ ? 'Execute Script' : 'Execute script',
+        submenu: runScriptSubmenu,
+      })
+    } else {
+      items.push(manageScriptsMenu)
+    }
   }
 
   items.push({ type: 'separator' })
